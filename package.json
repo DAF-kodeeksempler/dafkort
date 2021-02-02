@@ -1,0 +1,40 @@
+{
+  "name": "dafkort",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint **/*.js --ignore-pattern node_modules/ --ignore-pattern dist/",
+    "start": "copyfiles service-worker.js dist/ && parcel index.html",
+    "build": "copyfiles service-worker.js dist/ && parcel build --public-url . index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/finnjordal/dafkort.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/github.com/finnjordal/dafkort/issues"
+  },
+  "homepage": "https://github.com/github.com/finnjordal/dagkort#readme",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "copyfiles": "^2.3.0",
+    "futil": "^1.67.0",
+    "mdn-polyfills": "^5.20.0",
+    "modules": "^0.4.0",
+    "ol": "^5.3.3",
+    "ol-contextmenu": "^3.3.2",
+    "ol-layerswitcher": "^3.6.0",
+    "ol-popup": "^4.0.0",
+    "proj4": "^2.6.2",
+    "styles": "^0.2.1",
+    "whatwg-fetch": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "parcel-bundler": "^1.12.4"
+  }
+}
