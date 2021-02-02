@@ -4,15 +4,11 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { get as getProjection } from 'ol/proj';
 import LayerTile from 'ol/layer/Tile';
-import ImageLayer from 'ol/layer/Image';
 import LayerGroup from 'ol/layer/Group';
 import TileWMS from 'ol/source/TileWMS';
-import ImageWMS from 'ol/source/ImageWMS';
 import WMTS from 'ol/source/WMTS';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import * as futil from '/modules/futil';
-import { optionsFromCapabilities } from 'ol/source/WMTS';
-import WMTSCapabilities from 'ol/format/WMTSCapabilities';
 
 proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
 register(proj4);
@@ -227,7 +223,7 @@ export var baggrundskortWMS = new LayerGroup({
       })
     }), 
     new LayerTile({  
-      title:'Skærmkort - dæmpet(KF)',    
+      title:'Skærmkort - dæmpet (KF)',    
       type:'base',
       visible: false, 
       source: new TileWMS({       
