@@ -4,6 +4,8 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { get as getProjection } from 'ol/proj';
 import LayerTile from 'ol/layer/Tile';
+import ImageLayer from 'ol/layer/Image';
+import ImageWMS from 'ol/source/ImageWMS';
 import LayerGroup from 'ol/layer/Group';
 import TileWMS from 'ol/source/TileWMS';
 import WMTS from 'ol/source/WMTS';
@@ -285,9 +287,53 @@ export var baggrundskortWMS = new LayerGroup({
         },      
         attributions: getAttributions('daf')
       })
-    }), 
+    })
   ]
 });
+
+
+export var WMSlag= new LayerGroup({
+  title: 'WMS lag',
+  fold: 'close',
+  layers: [
+    new ImageLayer({
+      title:'Matrikel (KF)',
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000,
+      source: new ImageWMS({
+        url: "https://services.kortforsyningen.dk/mat?token="+kftoken,
+        params:{
+          'LAYERS':'MatrikelSkel,Centroide',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'true',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },          
+        attributions: getAttributions('kf')
+      })
+    }), 
+    new ImageLayer({  
+      title:'Matrikel (DAF)',    
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000, 
+      source: new ImageWMS({       
+        url: 'https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS?'+dafusrpw,
+        params: {
+          'LAYERS':'MatrikelSkel_Gaeldende,Centroide_Gaeldende',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'TRUE',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },      
+        attributions: getAttributions('daf')
+      })
+    }), 
+  ]
+})
 
 
 function beregnAfstand(location1, location2) {
