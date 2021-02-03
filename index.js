@@ -22,17 +22,3 @@ const map = new Map({
 });
 
 geolocation.show(map);
-
-// PWA stuff
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    const swfile= '/service-worker.js';
-    navigator.serviceWorker.register(swfile)
-      .then((reg) => {
-        console.log('Service worker registered.', reg);
-      })
-      .catch(function (err) {
-        console.log('Service Worker registration failed: ', err)
-      });
-  });
-}
