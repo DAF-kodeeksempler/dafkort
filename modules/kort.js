@@ -46,7 +46,7 @@ function getAttributions(platform) {
   else if (platform === 'daf') {
     attribution=  '<p>Kort fra <a href="https://datafordeler.dk" target="_blank">Datafordeleren</a>.';
   }
-  return attribution;
+  return attribution + ' <a href="https://github.com/finnjordal/dafkort">Eksempelkode</a>';
 }
 
 let kftoken = futil.getKortforsyningstoken(); 
@@ -190,7 +190,7 @@ export var baggrundskortWMTS = new LayerGroup({
 
 export var baggrundskortWMS = new LayerGroup({
   'title': 'Baggrundskort - WMS',
-  'fold': 'open',
+  'fold': 'close',
   layers: [
     new LayerTile({  
       title:'Skærmkort - grå (KF)',    
@@ -296,6 +296,168 @@ export var WMSlag= new LayerGroup({
   title: 'WMS lag',
   fold: 'close',
   layers: [
+    new ImageLayer({  
+      title:'GeoDanmark - vejmidter (DAF)',    
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000, 
+      source: new ImageWMS({       
+        url: 'https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS?'+dafusrpw,
+        params: {
+          'LAYERS':'vejmidte',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'TRUE',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },      
+        attributions: getAttributions('daf')
+      })
+    }), 
+    new ImageLayer({
+      title:'Stednavne - vandløb(KF)',
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000,
+      source: new ImageWMS({
+        url: "https://services.kortforsyningen.dk/danske_stednavne?token="+kftoken,
+        params:{
+          'LAYERS':'vandloeb',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'true',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },          
+        attributions: getAttributions('kf')
+      })
+    }), 
+    new ImageLayer({  
+      title:'Stednavne - vandløb (DAF)',    
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000, 
+      source: new ImageWMS({       
+        url: 'https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS?'+dafusrpw,
+        params: {
+          'LAYERS':'vandloeb',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'TRUE',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },      
+        attributions: getAttributions('daf')
+      })
+    }), 
+    new ImageLayer({
+      title:'DHM Overflade (KF)',
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000,
+      source: new ImageWMS({
+        url: "https://services.kortforsyningen.dk/dhm?token="+kftoken,
+        params:{
+          'LAYERS':'dhm_overflade_skyggekort_transparent',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'true',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },          
+        attributions: getAttributions('kf')
+      })
+    }), 
+    new ImageLayer({  
+      title:'DHM Overflade (DAF)',    
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000, 
+      source: new ImageWMS({       
+        url: 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS?'+dafusrpw,
+        params: {
+          'LAYERS':'dhm_overflade_skyggekort',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'TRUE',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },      
+        attributions: getAttributions('daf')
+      })
+    }), 
+    new ImageLayer({
+      title:'DHM Terræn (KF)',
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000,
+      source: new ImageWMS({
+        url: "https://services.kortforsyningen.dk/dhm?token="+kftoken,
+        params:{
+          'LAYERS':'dhm_terraen_skyggekort_transparent',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'true',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },          
+        attributions: getAttributions('kf')
+      })
+    }), 
+    new ImageLayer({  
+      title:'DHM Terræn (DAF)',    
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000, 
+      source: new ImageWMS({       
+        url: 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS?'+dafusrpw,
+        params: {
+          'LAYERS':'dhm_terraen_skyggekort',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'TRUE',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },      
+        attributions: getAttributions('daf')
+      })
+    }), 
+    new ImageLayer({
+      title:'DAGI kommuner (KF)',
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000,
+      source: new ImageWMS({
+        url: "https://services.kortforsyningen.dk/dagi?token="+kftoken,
+        params:{
+          'LAYERS':'kommune',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'true',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },          
+        attributions: getAttributions('kf')
+      })
+    }), 
+    new ImageLayer({  
+      title:'DAGI kommuner (DAF)',    
+      type:'overlay',
+      visible: false,
+      opacity: 1.0,
+      zIndex:1000, 
+      source: new ImageWMS({       
+        url: 'https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS?'+dafusrpw,
+        params: {
+          'LAYERS':'Kommuneinddeling',
+          'VERSION':'1.1.1',
+          'TRANSPARENT':'TRUE',
+          'FORMAT': "image/png",
+          'STYLES':'' 
+        },      
+        attributions: getAttributions('daf')
+      })
+    }), 
     new ImageLayer({
       title:'Matrikel (KF)',
       type:'overlay',
