@@ -1,8 +1,6 @@
 # dafkort
 
-Installer: 
-1. npm install copyfiles -g
-2. npm ci
+Installer: npm ci
 
 Test lokalt: npm start
 

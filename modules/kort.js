@@ -11,6 +11,8 @@ import TileWMS from 'ol/source/TileWMS';
 import WMTS from 'ol/source/WMTS';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import * as futil from '/modules/futil';
+import {wmsskaermkortlayers} from '/layers/WMSskaermkortlayers.js';
+import {wmsstednavnelayers} from '/layers/WMSstednavnelayers.js';
 
 proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
 register(proj4);
@@ -50,7 +52,71 @@ function getAttributions(platform) {
 }
 
 let kftoken = futil.getKortforsyningstoken(); 
-let dafusrpw = futil.getDatafordelerensUseridPw(); 
+let dafusrpw = futil.getDatafordelerensUseridPw();
+
+function daflayertile(url, layer) {
+  return new LayerTile({  
+    title: layer,    
+    type: 'base',
+    visible: false, 
+    source: new TileWMS({       
+      url: url,
+      params: {
+        'LAYERS':layer,
+        'VERSION':'1.1.1',
+        'TRANSPARENT':'FALSE',
+        'FORMAT': "image/png",
+        'STYLES':'' 
+      },      
+      attributions: getAttributions('daf')
+    })
+  }); 
+}
+
+function dafimagelayer(url, layer) {
+  return new ImageLayer({  
+    title:layer,    
+    type:'overlay',
+    visible: false,
+    opacity: 1.0,
+    zIndex:1000, 
+    source: new ImageWMS({       
+      url: url,
+      params: {
+        'LAYERS':layer,
+        'VERSION':'1.1.1',
+        'TRANSPARENT':'TRUE',
+        'FORMAT': "image/png",
+        'STYLES':'' 
+      },      
+      attributions: getAttributions('daf')
+    })
+  })
+} 
+
+let skaermkortwmslayers= [];
+
+for (let i= wmsskaermkortlayers.length; i >= 0; i--) {
+  skaermkortwmslayers.push(daflayertile('https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?'+dafusrpw, wmsskaermkortlayers[i]));
+}
+
+export var wmsskaermkortdaf = new LayerGroup({
+  'title': 'WMS Skærmkort - DAF',
+  'fold': 'close',
+  layers: skaermkortwmslayers
+});
+
+let stednavnewmslayers= [];
+
+for (let i= wmsstednavnelayers.length; i >= 0; i--) {
+  stednavnewmslayers.push(dafimagelayer('https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS?'+dafusrpw, wmsstednavnelayers[i], 'overlay'));
+}
+
+export var wmsstednavnedaf = new LayerGroup({
+  'title': 'WMS Stednavne - DAF',
+  'fold': 'close',
+  layers: stednavnewmslayers
+});
 
 export var baggrundskortWMTS = new LayerGroup({
   'title': 'Baggrundskort - WMTS',
