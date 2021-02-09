@@ -5,7 +5,7 @@ const xpath = require('xpath')
  
 async function main() {
     
-    let response= await fetch('https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS?service=WMS&version=1.3.0&request=GetCapabilities&username=KEXVKJDPAA&password=DAFTest777!')
+    let response= await fetch('https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS?service=WMS&version=1.3.0&request=GetCapabilities&username=KEXVKJDPAA&password=DAFTest777!')
     let text= await response.text();
 
     var doc = new dom().parseFromString(text);
@@ -20,7 +20,7 @@ async function main() {
     layers= layers.sort();
 
     let layertekst= JSON.stringify(layers);
-    fs.writeFileSync('WMSstednavnelayers.js',layertekst);
+    fs.writeFileSync('WMSGeoDanmarklayers.js',layertekst);
 
 
 }

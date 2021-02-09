@@ -13,6 +13,8 @@ import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import * as futil from '/modules/futil';
 import {wmsskaermkortlayers} from '/layers/WMSskaermkortlayers.js';
 import {wmsstednavnelayers} from '/layers/WMSstednavnelayers.js';
+import {wmsmatrikellayers} from '/layers/WMSmatrikellayers.js';
+import {wmsgeodanmarklayers} from '/layers/WMSgeodanmarklayers.js';
 
 proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
 register(proj4);
@@ -118,9 +120,33 @@ export var wmsstednavnedaf = new LayerGroup({
   layers: stednavnewmslayers
 });
 
+let matrikelwmslayers= [];
+
+for (let i= wmsmatrikellayers.length; i >= 0; i--) {
+  matrikelwmslayers.push(dafimagelayer('https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS?'+dafusrpw, wmsmatrikellayers[i], 'overlay'));
+}
+
+export var wmsmatrikeldaf = new LayerGroup({
+  'title': 'WMS Matrikel - DAF',
+  'fold': 'close',
+  layers: matrikelwmslayers
+});
+
+let geodanmarkwmslayers= [];
+
+for (let i= wmsgeodanmarklayers.length; i >= 0; i--) {
+  geodanmarkwmslayers.push(dafimagelayer('https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS?'+dafusrpw, wmsgeodanmarklayers[i], 'overlay'));
+}
+
+export var wmsgeodanmarkdaf = new LayerGroup({
+  'title': 'WMS GeoDanmark - DAF',
+  'fold': 'close',
+  layers: geodanmarkwmslayers
+});
+
 export var baggrundskortWMTS = new LayerGroup({
-  'title': 'Baggrundskort - WMTS',
-  'fold': 'open',
+  'title': 'Sammenlign baggrundskort - WMTS',
+  'fold': 'close',
   layers: [
     new LayerTile({
       //opacity: 1.0,
@@ -255,7 +281,7 @@ export var baggrundskortWMTS = new LayerGroup({
 
 
 export var baggrundskortWMS = new LayerGroup({
-  'title': 'Baggrundskort - WMS',
+  'title': 'Sammenlign baggrundskort - WMS',
   'fold': 'close',
   layers: [
     new LayerTile({  
@@ -359,7 +385,7 @@ export var baggrundskortWMS = new LayerGroup({
 
 
 export var WMSlag= new LayerGroup({
-  title: 'WMS lag',
+  title: 'Sammenlign WMS lag',
   fold: 'close',
   layers: [
     new ImageLayer({  
