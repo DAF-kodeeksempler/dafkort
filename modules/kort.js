@@ -12,9 +12,11 @@ import WMTS from 'ol/source/WMTS';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import * as futil from '/modules/futil';
 import {wmsskaermkortlayers} from '/layers/WMSskaermkortlayers.js';
+import {wmsdtk25layers} from '/layers/WMSdtk25layers.js';
 import {wmsstednavnelayers} from '/layers/WMSstednavnelayers.js';
 import {wmsmatrikellayers} from '/layers/WMSmatrikellayers.js';
 import {wmsgeodanmarklayers} from '/layers/WMSgeodanmarklayers.js';
+import {wmsdhmlayers} from '/layers/WMSdhmlayers.js';
 
 proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
 register(proj4);
@@ -108,6 +110,18 @@ export var wmsskaermkortdaf = new LayerGroup({
   layers: skaermkortwmslayers
 });
 
+let dtk25wmslayers= [];
+
+for (let i= wmsdtk25layers.length; i >= 0; i--) {
+  dtk25wmslayers.push(daflayertile('https://services.datafordeler.dk/DKtopokort/dtk_25/1.0.0/WMS?'+dafusrpw, wmsdtk25layers[i]));
+}
+
+export var wmsdtk25daf = new LayerGroup({
+  'title': 'WMS Danmarks Topografiske Kortværk 1:25.000 - DAF',
+  'fold': 'close',
+  layers: dtk25wmslayers
+});
+
 let stednavnewmslayers= [];
 
 for (let i= wmsstednavnelayers.length; i >= 0; i--) {
@@ -115,7 +129,7 @@ for (let i= wmsstednavnelayers.length; i >= 0; i--) {
 }
 
 export var wmsstednavnedaf = new LayerGroup({
-  'title': 'WMS Stednavne - DAF',
+  'title': 'WMS Danske Stednavne - DAF',
   'fold': 'close',
   layers: stednavnewmslayers
 });
@@ -127,7 +141,7 @@ for (let i= wmsmatrikellayers.length; i >= 0; i--) {
 }
 
 export var wmsmatrikeldaf = new LayerGroup({
-  'title': 'WMS Matrikel - DAF',
+  'title': 'WMS Matriklen - DAF',
   'fold': 'close',
   layers: matrikelwmslayers
 });
@@ -142,6 +156,18 @@ export var wmsgeodanmarkdaf = new LayerGroup({
   'title': 'WMS GeoDanmark - DAF',
   'fold': 'close',
   layers: geodanmarkwmslayers
+});
+
+let dhmwmslayers= [];
+
+for (let i= wmsdhmlayers.length; i >= 0; i--) {
+  dhmwmslayers.push(dafimagelayer('https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS?'+dafusrpw, wmsdhmlayers[i], 'overlay'));
+}
+
+export var wmsdhmdaf = new LayerGroup({
+  'title': 'WMS Danmarks Højdemodel - DAF',
+  'fold': 'close',
+  layers: dhmwmslayers
 });
 
 export var baggrundskortWMTS = new LayerGroup({
@@ -388,24 +414,6 @@ export var WMSlag= new LayerGroup({
   title: 'Sammenlign WMS lag',
   fold: 'close',
   layers: [
-    new ImageLayer({  
-      title:'GeoDanmark - vejmidter (DAF)',    
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000, 
-      source: new ImageWMS({       
-        url: 'https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS?'+dafusrpw,
-        params: {
-          'LAYERS':'vejmidte',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'TRUE',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('daf')
-      })
-    }), 
     new ImageLayer({
       title:'Stednavne - vandløb(KF)',
       type:'overlay',

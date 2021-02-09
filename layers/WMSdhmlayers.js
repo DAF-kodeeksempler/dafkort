@@ -1,0 +1,1 @@
+export var wmsdhmlayers = ["dhm_korrektion","dhm_kote_0_5_m","dhm_kote_2_5_m","dhm_kurve_0_25_m","dhm_kurve_0_5_m","dhm_kurve_traditionel","dhm_overflade_skyggekort","dhm_punktoprindelse","dhm_terraen_skyggekort"]
