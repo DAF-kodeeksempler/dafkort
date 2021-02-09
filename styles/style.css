@@ -13,6 +13,10 @@ html, body, #map {
   bottom: .5em;
 }
 
+.layer-switcher.shown {
+  max-height: 80vh;
+}
+
 .geolocationcontrol {
   top: 67px;
   left: .5em;
