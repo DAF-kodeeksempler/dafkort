@@ -17,6 +17,7 @@ import {wmsstednavnelayers} from '/layers/WMSstednavnelayers.js';
 import {wmsmatrikellayers} from '/layers/WMSmatrikellayers.js';
 import {wmsgeodanmarklayers} from '/layers/WMSgeodanmarklayers.js';
 import {wmsdhmlayers} from '/layers/WMSdhmlayers.js';
+import {wmsortoforaarlayers} from '/layers/WMSortoforaarlayers.js';
 
 proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
 register(proj4);
@@ -120,6 +121,18 @@ export var wmsdtk25daf = new LayerGroup({
   'title': 'WMS Danmarks Topografiske Kortværk 1:25.000 - DAF',
   'fold': 'close',
   layers: dtk25wmslayers
+});
+
+let ortoforaarwmslayers= [];
+
+for (let i= wmsortoforaarlayers.length; i >= 0; i--) {
+  ortoforaarwmslayers.push(daflayertile('https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS?'+dafusrpw, wmsortoforaarlayers[i]));
+}
+
+export var wmsortoforaardaf = new LayerGroup({
+  'title': 'WMS Ortofoto forår - DAF',
+  'fold': 'close',
+  layers: ortoforaarwmslayers
 });
 
 let stednavnewmslayers= [];
