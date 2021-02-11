@@ -18,6 +18,7 @@ import {wmsmatrikellayers} from '/layers/WMSmatrikellayers.js';
 import {wmsgeodanmarklayers} from '/layers/WMSgeodanmarklayers.js';
 import {wmsdhmlayers} from '/layers/WMSdhmlayers.js';
 import {wmsortoforaarlayers} from '/layers/WMSortoforaarlayers.js';
+import {wmsdagilayers} from '/layers/WMSdagilayers.js';
 
 proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
 register(proj4);
@@ -181,6 +182,18 @@ export var wmsdhmdaf = new LayerGroup({
   'title': 'WMS Danmarks Højdemodel - DAF',
   'fold': 'close',
   layers: dhmwmslayers
+});
+
+let dagiwmslayers= [];
+
+for (let i= wmsdagilayers.length; i >= 0; i--) {
+  dagiwmslayers.push(dafimagelayer('https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS?'+dafusrpw, wmsdagilayers[i], 'overlay'));
+}
+
+export var wmsdagidaf = new LayerGroup({
+  'title': 'WMS DAGI - DAF',
+  'fold': 'close',
+  layers: dagiwmslayers
 });
 
 export var baggrundskortWMTS = new LayerGroup({
