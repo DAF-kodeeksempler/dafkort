@@ -10,6 +10,10 @@ import LayerSwitcher from 'ol-layerswitcher';
 import {defaults as defaultControls} from 'ol/control';
 import * as kort from '/modules/kort';
 import * as geolocation from '/modules/geolocation';
+import {PolygonControl} from '/modules/polygoncontrol';
+import Popup from 'ol-popup';
+
+var popup= new Popup();
 
 const map = new Map({
   target: 'map',
@@ -17,8 +21,11 @@ const map = new Map({
   loadTilesWhileAnimating: true,
   view: kort.view, 
   controls: defaultControls().extend([
-    new LayerSwitcher()
+    new LayerSwitcher(),
+    new PolygonControl({popup: popup})
   ]),
 });
+
+map.addOverlay(popup);
 
 geolocation.show(map);
