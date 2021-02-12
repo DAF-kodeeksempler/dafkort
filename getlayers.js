@@ -5,7 +5,7 @@ const xpath = require('xpath')
  
 async function main() {
     
-    let response= await fetch('https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS?service=WMS&version=1.3.0&request=GetCapabilities&username=KEXVKJDPAA&password=DAFTest777!')
+    let response= await fetch('https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS??service=WMS&version=1.3.0&request=GetCapabilities&username=KEXVKJDPAA&password=DAFTest777!')
     let text= await response.text();
 
     var doc = new dom().parseFromString(text);
@@ -21,7 +21,7 @@ async function main() {
     layers= layers.sort();
 
     let layertekst= JSON.stringify(layers);
-    fs.writeFileSync('WMTSdagilayers.js',layertekst);
+    fs.writeFileSync('WMSdtk1000layers.js',layertekst);
 
 
 }

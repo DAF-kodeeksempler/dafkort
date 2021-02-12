@@ -13,7 +13,7 @@ import * as geolocation from '/modules/geolocation';
 
 const map = new Map({
   target: 'map',
-  layers: [kort.wmsdagidaf, kort.wmsdhmdaf, kort.wmsgeodanmarkdaf, kort.wmsmatrikeldaf, kort.wmsstednavnedaf, kort.wmsortoforaardaf, kort.wmsdtk25daf, kort.wmsskaermkortdaf, kort.WMSlag, kort.baggrundskortWMS, kort.baggrundskortWMTS],
+  layers: [kort.wmsdagidaf, kort.wmsdhmdaf, kort.wmsgeodanmarkdaf, kort.wmsmatrikeldaf, kort.wmsstednavnedaf, kort.wmsortoforaardaf, kort.wmsdtk1000daf, kort.wmsdtk500daf, kort.wmsdtk250daf, kort.wmsdtk25daf, kort.wmsskaermkortdaf, kort.WMSlag, kort.baggrundskortWMS, kort.baggrundskortWMTS],
   loadTilesWhileAnimating: true,
   view: kort.view, 
   controls: defaultControls().extend([

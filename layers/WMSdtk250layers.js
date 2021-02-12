@@ -1,0 +1,1 @@
+export var wmsdtk250layers = ["dtk250","dtk250_2017","dtk250_2019","dtk250_2020"]

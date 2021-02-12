@@ -13,6 +13,9 @@ import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import * as futil from '/modules/futil';
 import {wmsskaermkortlayers} from '/layers/WMSskaermkortlayers.js';
 import {wmsdtk25layers} from '/layers/WMSdtk25layers.js';
+import {wmsdtk250layers} from '/layers/WMSdtk250layers.js';
+import {wmsdtk500layers} from '/layers/WMSdtk500layers.js';
+import {wmsdtk1000layers} from '/layers/WMSdtk1000layers.js';
 import {wmsstednavnelayers} from '/layers/WMSstednavnelayers.js';
 import {wmsmatrikellayers} from '/layers/WMSmatrikellayers.js';
 import {wmsgeodanmarklayers} from '/layers/WMSgeodanmarklayers.js';
@@ -122,6 +125,42 @@ export var wmsdtk25daf = new LayerGroup({
   'title': 'WMS Danmarks Topografiske Kortværk 1:25.000 - DAF',
   'fold': 'close',
   layers: dtk25wmslayers
+});
+
+let dtk250wmslayers= [];
+
+for (let i= wmsdtk250layers.length; i >= 0; i--) {
+  dtk250wmslayers.push(daflayertile('https://services.datafordeler.dk/DKtopokort/dtk_250/1.0.0/WMS?'+dafusrpw, wmsdtk250layers[i]));
+}
+
+export var wmsdtk250daf = new LayerGroup({
+  'title': 'WMS Danmarks Topografiske Kortværk 1:250.000 - DAF',
+  'fold': 'close',
+  layers: dtk250wmslayers
+});
+
+let dtk500wmslayers= [];
+
+for (let i= wmsdtk500layers.length; i >= 0; i--) {
+  dtk500wmslayers.push(daflayertile('https://services.datafordeler.dk/DKtopokort/dtk_500/1.0.0/WMS?'+dafusrpw, wmsdtk500layers[i]));
+}
+
+export var wmsdtk500daf = new LayerGroup({
+  'title': 'WMS Danmarks Topografiske Kortværk 1:500.000 - DAF',
+  'fold': 'close',
+  layers: dtk500wmslayers
+});
+
+let dtk1000wmslayers= [];
+
+for (let i= wmsdtk1000layers.length; i >= 0; i--) {
+  dtk1000wmslayers.push(daflayertile('https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS?'+dafusrpw, wmsdtk1000layers[i]));
+}
+
+export var wmsdtk1000daf = new LayerGroup({
+  'title': 'WMS Danmarks Topografiske Kortværk 1:1000.000 - DAF',
+  'fold': 'close',
+  layers: dtk1000wmslayers
 });
 
 let ortoforaarwmslayers= [];
