@@ -26,12 +26,12 @@ html, body, #map {
   top: 82px;
 }
 
-.polygoncontrol {
+.bboxcontrol {
   top: 102px;
   left: .5em;
 }
 
-.ol-touch .polygoncontrol {
+.ol-touch .bboxcontrol {
   top: 122px;
 }
 

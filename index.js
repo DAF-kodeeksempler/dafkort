@@ -10,7 +10,7 @@ import LayerSwitcher from 'ol-layerswitcher';
 import {defaults as defaultControls} from 'ol/control';
 import * as kort from '/modules/kort';
 import * as geolocation from '/modules/geolocation';
-import {PolygonControl} from '/modules/polygoncontrol';
+import {BBOXControl} from '/modules/bboxcontrol';
 import Popup from 'ol-popup';
 
 var popup= new Popup();
@@ -22,7 +22,7 @@ const map = new Map({
   view: kort.view, 
   controls: defaultControls().extend([
     new LayerSwitcher(),
-    new PolygonControl({popup: popup})
+    new BBOXControl({popup: popup})
   ]),
 });
 

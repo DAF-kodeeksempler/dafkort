@@ -3,4 +3,5 @@ DAGI dokumentation mangler link til GetCapabilities fil
 DHM dokumentation mangler link til GetCapabilities fil
 DHM WMS ser ud til at mangle transparente lag https://datafordeler.dk/dataoversigt/danmarks-hoejdemodel/dhm-wms/
 Stednavne WMS. vandloeb_label laget virker ikke.
+https://services.datafordeler.dk/DAR/DAR/1/rest/husnummer?
 

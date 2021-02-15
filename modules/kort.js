@@ -103,136 +103,78 @@ function dafimagelayer(url, layer) {
   })
 } 
 
-let skaermkortwmslayers= [];
-
-for (let i= wmsskaermkortlayers.length; i >= 0; i--) {
-  skaermkortwmslayers.push(daflayertile('https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?'+dafusrpw, wmsskaermkortlayers[i]));
+function danlag(lagnavne, lagfunktion, url) {
+  let layers = [];
+  for (let i = lagnavne.length; i >= 0; i--) {
+    layers.push(lagfunktion(url + '?' + dafusrpw, lagnavne[i]));
+  }
+  return layers;
 }
 
 export var wmsskaermkortdaf = new LayerGroup({
   'title': 'WMS Skærmkort - DAF',
   'fold': 'close',
-  layers: skaermkortwmslayers
+  layers: danlag(wmsskaermkortlayers, daflayertile, 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms')
 });
-
-let dtk25wmslayers= [];
-
-for (let i= wmsdtk25layers.length; i >= 0; i--) {
-  dtk25wmslayers.push(daflayertile('https://services.datafordeler.dk/DKtopokort/dtk_25/1.0.0/WMS?'+dafusrpw, wmsdtk25layers[i]));
-}
 
 export var wmsdtk25daf = new LayerGroup({
   'title': 'WMS Danmarks Topografiske Kortværk 1:25.000 - DAF',
   'fold': 'close',
-  layers: dtk25wmslayers
+  layers: danlag(wmsdtk25layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_25/1.0.0/WMS')
 });
-
-let dtk250wmslayers= [];
-
-for (let i= wmsdtk250layers.length; i >= 0; i--) {
-  dtk250wmslayers.push(daflayertile('https://services.datafordeler.dk/DKtopokort/dtk_250/1.0.0/WMS?'+dafusrpw, wmsdtk250layers[i]));
-}
 
 export var wmsdtk250daf = new LayerGroup({
   'title': 'WMS Danmarks Topografiske Kortværk 1:250.000 - DAF',
   'fold': 'close',
-  layers: dtk250wmslayers
+  layers: danlag(wmsdtk250layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_250/1.0.0/WMS')
 });
-
-let dtk500wmslayers= [];
-
-for (let i= wmsdtk500layers.length; i >= 0; i--) {
-  dtk500wmslayers.push(daflayertile('https://services.datafordeler.dk/DKtopokort/dtk_500/1.0.0/WMS?'+dafusrpw, wmsdtk500layers[i]));
-}
 
 export var wmsdtk500daf = new LayerGroup({
   'title': 'WMS Danmarks Topografiske Kortværk 1:500.000 - DAF',
   'fold': 'close',
-  layers: dtk500wmslayers
+  layers: danlag(wmsdtk500layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_500/1.0.0/WMS')
 });
-
-let dtk1000wmslayers= [];
-
-for (let i= wmsdtk1000layers.length; i >= 0; i--) {
-  dtk1000wmslayers.push(daflayertile('https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS?'+dafusrpw, wmsdtk1000layers[i]));
-}
 
 export var wmsdtk1000daf = new LayerGroup({
   'title': 'WMS Danmarks Topografiske Kortværk 1:1000.000 - DAF',
   'fold': 'close',
-  layers: dtk1000wmslayers
+  layers: danlag(wmsdtk1000layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS')
 });
-
-let ortoforaarwmslayers= [];
-
-for (let i= wmsortoforaarlayers.length; i >= 0; i--) {
-  ortoforaarwmslayers.push(daflayertile('https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS?'+dafusrpw, wmsortoforaarlayers[i]));
-}
 
 export var wmsortoforaardaf = new LayerGroup({
   'title': 'WMS Ortofoto forår - DAF',
   'fold': 'close',
-  layers: ortoforaarwmslayers
+  layers: danlag(wmsortoforaarlayers, daflayertile, 'https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS')
 });
-
-let stednavnewmslayers= [];
-
-for (let i= wmsstednavnelayers.length; i >= 0; i--) {
-  stednavnewmslayers.push(dafimagelayer('https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS?'+dafusrpw, wmsstednavnelayers[i], 'overlay'));
-}
 
 export var wmsstednavnedaf = new LayerGroup({
   'title': 'WMS Danske Stednavne - DAF',
   'fold': 'close',
-  layers: stednavnewmslayers
+  layers: danlag(wmsstednavnelayers, dafimagelayer, 'https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS')
 });
-
-let matrikelwmslayers= [];
-
-for (let i= wmsmatrikellayers.length; i >= 0; i--) {
-  matrikelwmslayers.push(dafimagelayer('https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS?'+dafusrpw, wmsmatrikellayers[i], 'overlay'));
-}
 
 export var wmsmatrikeldaf = new LayerGroup({
   'title': 'WMS Matriklen - DAF',
   'fold': 'close',
-  layers: matrikelwmslayers
+  layers: danlag(wmsmatrikellayers, dafimagelayer, 'https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS')
 });
-
-let geodanmarkwmslayers= [];
-
-for (let i= wmsgeodanmarklayers.length; i >= 0; i--) {
-  geodanmarkwmslayers.push(dafimagelayer('https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS?'+dafusrpw, wmsgeodanmarklayers[i], 'overlay'));
-}
 
 export var wmsgeodanmarkdaf = new LayerGroup({
   'title': 'WMS GeoDanmark - DAF',
   'fold': 'close',
-  layers: geodanmarkwmslayers
+  layers: danlag(wmsgeodanmarklayers, dafimagelayer, 'https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS')
 });
-
-let dhmwmslayers= [];
-
-for (let i= wmsdhmlayers.length; i >= 0; i--) {
-  dhmwmslayers.push(dafimagelayer('https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS?'+dafusrpw, wmsdhmlayers[i], 'overlay'));
-}
 
 export var wmsdhmdaf = new LayerGroup({
   'title': 'WMS Danmarks Højdemodel - DAF',
   'fold': 'close',
-  layers: dhmwmslayers
+  layers: danlag(wmsdhmlayers, dafimagelayer, 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS')
 });
-
-let dagiwmslayers= [];
-
-for (let i= wmsdagilayers.length; i >= 0; i--) {
-  dagiwmslayers.push(dafimagelayer('https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS?'+dafusrpw, wmsdagilayers[i], 'overlay'));
-}
 
 export var wmsdagidaf = new LayerGroup({
   'title': 'WMS DAGI - DAF',
   'fold': 'close',
-  layers: dagiwmslayers
+  layers: danlag(wmsdagilayers, dafimagelayer, 'https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS')
 });
 
 export var baggrundskortWMTS = new LayerGroup({
@@ -661,7 +603,6 @@ export var WMSlag= new LayerGroup({
     }), 
   ]
 })
-
 
 function beregnAfstand(location1, location2) {
   let l = Math.sqrt(Math.pow(location1[0] - location2[0], 2) + Math.pow(location1[0] - location2[0], 2));

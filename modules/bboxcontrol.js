@@ -4,11 +4,11 @@ import {DragBox, Draw, Modify, Snap} from 'ol/interaction';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import {Vector as VectorSource} from 'ol/source';
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style';
-import {getBottomLeft, getTopLeft, getBottomRight} from 'ol/extent';
+import {getBottomLeft, getTopLeft, getTopRight} from 'ol/extent';
 
-export var PolygonControl = (function (Control) {
+export var BBOXControl = (function (Control) {
   var popup;
-  function PolygonControl(opt_options) {
+  function BBOXControl(opt_options) {
     var options = opt_options || {};
     popup= options.popup;
 
@@ -16,7 +16,7 @@ export var PolygonControl = (function (Control) {
     button.innerHTML = 'B';
 
     var element = document.createElement('div');
-    element.className = 'polygoncontrol ol-unselectable ol-control';
+    element.className = 'bboxcontrol ol-unselectable ol-control';
     element.appendChild(button);
 
     Control.call(this, {
@@ -24,24 +24,25 @@ export var PolygonControl = (function (Control) {
       target: options.target
     });
 
-    button.addEventListener('click', this.tegnPolygon.bind(this), false);
+    button.addEventListener('click', this.tegnBBOX.bind(this), false);
   }
 
-  if ( Control ) PolygonControl.__proto__ = Control;
-  PolygonControl.prototype = Object.create( Control && Control.prototype );
-  PolygonControl.prototype.constructor = PolygonControl;
+  if ( Control ) BBOXControl.__proto__ = Control;
+  BBOXControl.prototype = Object.create( Control && Control.prototype );
+  BBOXControl.prototype.constructor = BBOXControl;
 
-  PolygonControl.prototype.tegnPolygon = async function tegnPolygon () {
+  BBOXControl.prototype.tegnBBOX = async function tegnBBOX () {
     var dragBox = new DragBox();
     dragBox.once('boxend', function () {
       var extent = dragBox.getGeometry().getExtent();
-      let tl= getTopLeft(extent);
-      let br= getBottomRight(extent);
+      let bl= getBottomLeft(extent);
+      let tr= getTopRight(extent);
       //alert('boxend' + tl + ' - ' + br); 
-      popup.show(br, JSON.stringify(tl) + ' - ' + JSON.stringify(br)); 
+      let tekst= 'Vest=' + bl[0] + '&Syd=' + bl[1] + '&Oest=' + tr[0] + '&Nord=' + tr[1];
+      popup.show(bl, tekst); 
       navigator.permissions.query({name: "clipboard-write"}).then(result => {
         if (result.state == "granted" || result.state == "prompt") {
-          navigator.clipboard.writeText(JSON.stringify(tl) + ' - ' + JSON.stringify(br));
+          navigator.clipboard.writeText(tekst);
         }
       });      
       this.getMap().removeInteraction(dragBox);
@@ -52,5 +53,5 @@ export var PolygonControl = (function (Control) {
     this.getMap().addInteraction(dragBox);
   }
 
-  return PolygonControl;
+  return BBOXControl;
 }(Control));
