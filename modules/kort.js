@@ -57,7 +57,7 @@ function getAttributions(platform) {
   else if (platform === 'daf') {
     attribution=  '<p>Kort fra <a href="https://datafordeler.dk" target="_blank">Datafordeleren</a>.';
   }
-  return attribution + ' <a href="https://github.com/finnjordal/dafkort">Eksempelkode</a>';
+  return attribution + ' <a href="https://github.com/DAF-kodeeksempler/dafkort">Koden</a>';
 }
 
 let kftoken = futil.getKortforsyningstoken(); 
