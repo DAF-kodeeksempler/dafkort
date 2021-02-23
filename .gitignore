@@ -63,3 +63,6 @@ typings/
 # parcel cache og distribution
 .cache
 dist
+
+# authentication
+auth.js

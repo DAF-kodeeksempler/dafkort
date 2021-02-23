@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint **/*.js --ignore-pattern node_modules/ --ignore-pattern dist/",
-    "start": "parcel index.html",
-    "build": "parcel build --public-url . index.html"
+    "start": "node writeauth.js && parcel index.html",
+    "build": "node writeauth.js && parcel build --public-url . index.html"
   },
   "repository": {
     "type": "git",
