@@ -8,6 +8,7 @@ async function main() {
   auth.dafpassword= process.env.dafpassword;
   auth.kftoken= process.env.kftoken;
   console.log(`dafusername= ${auth.dafusername}`);
+  console.log(`kftoken= ${auth.kftoken}`);
   let tekst= JSON.stringify(auth);
   fs.writeFileSync('auth.js','export var auth =' + tekst);
 }

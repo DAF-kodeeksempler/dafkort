@@ -1,7 +1,7 @@
 import {auth} from '/auth.js'
 
 export function getKortforsyningstoken() {
-	return '8e80645d3ed3b69f82016441786af134';
+	return auth.kftoken;
 }
 
 export function getDatafordelerensUseridPw() {
