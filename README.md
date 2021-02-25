@@ -14,6 +14,7 @@ dafkort anvender [OpenLayers](https://openlayers.org/) til kort funktionalitet.
 * Klon dafkort repositoriet
 * Installer dafkort's afhængigheder: npm ci
 * Sæt enviroment variablene dafusername og dafpassword til tjenestebrugerens username og password
+* Sæt enviroment variablen kftoken til autentifikationstoken fra Kortforsyningen
 
 Test lokalt: npm start
 
