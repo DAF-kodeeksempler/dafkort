@@ -11,17 +11,20 @@ import TileWMS from 'ol/source/TileWMS';
 import WMTS from 'ol/source/WMTS';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import * as futil from '/modules/futil';
-import {wmsskaermkortlayers} from '/layers/WMSskaermkortlayers.js';
-import {wmsdtk25layers} from '/layers/WMSdtk25layers.js';
-import {wmsdtk250layers} from '/layers/WMSdtk250layers.js';
-import {wmsdtk500layers} from '/layers/WMSdtk500layers.js';
-import {wmsdtk1000layers} from '/layers/WMSdtk1000layers.js';
-import {wmsstednavnelayers} from '/layers/WMSstednavnelayers.js';
-import {wmsmatrikellayers} from '/layers/WMSmatrikellayers.js';
-import {wmsgeodanmarklayers} from '/layers/WMSgeodanmarklayers.js';
-import {wmsdhmlayers} from '/layers/WMSdhmlayers.js';
-import {wmsortoforaarlayers} from '/layers/WMSortoforaarlayers.js';
-import {wmsdagilayers} from '/layers/WMSdagilayers.js';
+//import {wmsskaermkortlayers} from '/layers/WMSskaermkortlayers.js';
+// import {wmsdtk25layers} from '/layers/WMSdtk25layers.js';
+// import {wmsdtk250layers} from '/layers/WMSdtk250layers.js';
+// import {wmsdtk500layers} from '/layers/WMSdtk500layers.js';
+// import {wmsdtk1000layers} from '/layers/WMSdtk1000layers.js';
+// import {wmsstednavnelayers} from '/layers/WMSstednavnelayers.js';
+// import {wmsmatrikellayers} from '/layers/WMSmatrikellayers.js';
+// import {wmsgeodanmarklayers} from '/layers/WMSgeodanmarklayers.js';
+// import {wmsdhmlayers} from '/layers/WMSdhmlayers.js';
+//import {wmsortoforaarlayers} from '/layers/WMSortoforaarlayers.js';
+// import {wmsdagilayers} from '/layers/WMSdagilayers.js';
+
+import xpath from 'xpath';
+import {DOMParser} from 'xmldom';
 
 proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
 register(proj4);
@@ -59,15 +62,19 @@ function getAttributions(platform) {
   }
   return attribution + ' <a href="https://github.com/DAF-kodeeksempler/dafkort">Koden</a>';
 }
-
-let kftoken = futil.getKortforsyningstoken(); 
+ 
 let dafusrpw = futil.getDatafordelerensUseridPw();
 
-function daflayertile(url, layer) {
+function credentials(searchParams) { 
+  searchParams.append('username',process.env.dafusername);
+  searchParams.append('password', process.env.dafpassword); 
+}
+
+function daflayertile(url, layer, synligtlag) {
   return new LayerTile({  
     title: layer,    
     type: 'base',
-    visible: false, 
+    visible: (synligtlag!==undefined) && (layer.localeCompare(synligtlag)===0), 
     source: new TileWMS({       
       url: url,
       params: {
@@ -103,506 +110,185 @@ function dafimagelayer(url, layer) {
   })
 } 
 
-function danlag(lagnavne, lagfunktion, url) {
+function danlag(lagnavne, lagfunktion, url, synligtlag) {
   let layers = [];
-  for (let i = lagnavne.length; i >= 0; i--) {
-    layers.push(lagfunktion(url + '?' + dafusrpw, lagnavne[i]));
+  for (let i = lagnavne.length-1; i >= 0; i--) {
+    layers.push(lagfunktion(url + '?' + dafusrpw, lagnavne[i], synligtlag));
   }
   return layers;
 }
 
-export var wmsskaermkortdaf = new LayerGroup({
-  'title': 'WMS Skærmkort - DAF',
-  'fold': 'close',
-  layers: danlag(wmsskaermkortlayers, daflayertile, 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms')
-});
+async function getWMSlag(url) {  
+  return new Promise(async resolved => {
+    let skrmurl= new URL(url);
+    credentials(skrmurl.searchParams);
+    skrmurl.searchParams.append('service','WMS');
+    skrmurl.searchParams.append('request', 'GetCapabilities');
+    const response= await fetch(skrmurl);
+    const text= await response.text();
 
-export var wmsdtk25daf = new LayerGroup({
-  'title': 'WMS Danmarks Topografiske Kortværk 1:25.000 - DAF',
-  'fold': 'close',
-  layers: danlag(wmsdtk25layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_25/1.0.0/WMS')
-});
+    var doc = new DOMParser().parseFromString(text);
+    var select = xpath.useNamespaces({"ns": "http://www.opengis.net/wms"}); //WMS
+    var nodes = select("//ns:Layer/ns:Layer/ns:Name/text()", doc)
+  
+    let layers= [];
+    for (let i= 0; i<nodes.length; i++) {
+      layers.push(nodes[i].toString());
+    };
+    resolved(layers);
+  });
+}
 
-export var wmsdtk250daf = new LayerGroup({
-  'title': 'WMS Danmarks Topografiske Kortværk 1:250.000 - DAF',
-  'fold': 'close',
-  layers: danlag(wmsdtk250layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_250/1.0.0/WMS')
-});
+var wmsskaermkortlayers= [];
+var wmsortoforaarlayers= [];
+var wmsdtk25layers= [];
+var wmsdagilayers= [];
+var wmsdhmlayers= [];
+var wmsgeodanmarklayers= [];
+var wmsmatrikellayers= [];
+var wmsstednavnelayers= [];
+var wmsdtk1000layers= [];
+var wmsdtk500layers= [];
+var wmsdtk250layers= [];
+var wmsdtk25layers= [];
+export async function init() {
+  let services= [];
+  services.push(getWMSlag('https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms'));
+  services.push(getWMSlag('https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS'));
+  services.push(getWMSlag('https://services.datafordeler.dk/DKtopokort/dtk_25/1.0.0/WMS'));
+  services.push(getWMSlag('https://services.datafordeler.dk/DKtopokort/dtk_250/1.0.0/WMS'));
+  services.push(getWMSlag('https://services.datafordeler.dk/DKtopokort/dtk_500/1.0.0/WMS'));
+  services.push(getWMSlag('https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS'));
+  services.push(getWMSlag('https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS'));
+  services.push(getWMSlag('https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS'));
+  services.push(getWMSlag('https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS'));
+  services.push(getWMSlag('https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS'));
+  services.push(getWMSlag('https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS'));
+  let servicelag= await Promise.allSettled(services);
+  if (servicelag[0].status === "fulfilled") {
+    wmsskaermkortlayers= servicelag[0].value;
+  }
+  if (servicelag[1].status === "fulfilled") {
+    wmsortoforaarlayers= servicelag[1].value;
+  }
+  if (servicelag[2].status === "fulfilled") {
+    wmsdtk25layers= servicelag[2].value;
+  }
+  if (servicelag[3].status === "fulfilled") {
+    wmsdtk250layers= servicelag[3].value;
+  }
+  if (servicelag[4].status === "fulfilled") {
+    wmsdtk500layers= servicelag[4].value;
+  }
+  if (servicelag[5].status === "fulfilled") {
+    wmsdtk1000layers= servicelag[5].value;
+  }
+  if (servicelag[6].status === "fulfilled") {
+    wmsstednavnelayers= servicelag[6].value;
+  }
+  if (servicelag[7].status === "fulfilled") {
+    wmsmatrikellayers= servicelag[7].value;
+  }
+  if (servicelag[8].status === "fulfilled") {
+    wmsgeodanmarklayers= servicelag[8].value;
+  }
+  if (servicelag[9].status === "fulfilled") {
+    wmsdhmlayers= servicelag[9].value;
+  }
+  if (servicelag[10].status === "fulfilled") {
+    wmsdagilayers= servicelag[10].value;
+  }
+}
 
-export var wmsdtk500daf = new LayerGroup({
-  'title': 'WMS Danmarks Topografiske Kortværk 1:500.000 - DAF',
-  'fold': 'close',
-  layers: danlag(wmsdtk500layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_500/1.0.0/WMS')
-});
+export function wmsskaermkortdaf() { 
+  return new LayerGroup({
+    'title': 'WMS Skærmkort - DAF',
+    'fold': 'close',
+    layers: danlag(wmsskaermkortlayers, daflayertile, 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms', "dtk_skaermkort")
+  });
+}
 
-export var wmsdtk1000daf = new LayerGroup({
-  'title': 'WMS Danmarks Topografiske Kortværk 1:1000.000 - DAF',
-  'fold': 'close',
-  layers: danlag(wmsdtk1000layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS')
-});
+export function wmsortoforaardaf() {
+  return new LayerGroup({
+    'title': 'WMS Ortofoto forår - DAF',
+    'fold': 'close',
+    layers: danlag(wmsortoforaarlayers, daflayertile, 'https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS')
+  });
+}
 
-export var wmsortoforaardaf = new LayerGroup({
-  'title': 'WMS Ortofoto forår - DAF',
-  'fold': 'close',
-  layers: danlag(wmsortoforaarlayers, daflayertile, 'https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS')
-});
+export function wmsdtk25daf() {
+  return new LayerGroup({
+    'title': 'WMS Danmarks Topografiske Kortværk 1:25.000 - DAF',
+    'fold': 'close',
+    layers: danlag(wmsdtk25layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_25/1.0.0/WMS')
+  });
+}
 
-export var wmsstednavnedaf = new LayerGroup({
-  'title': 'WMS Danske Stednavne - DAF',
-  'fold': 'close',
-  layers: danlag(wmsstednavnelayers, dafimagelayer, 'https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS')
-});
+export function wmsdtk250daf() {
+  return new LayerGroup({
+    'title': 'WMS Danmarks Topografiske Kortværk 1:250.000 - DAF',
+    'fold': 'close',
+    layers: danlag(wmsdtk250layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_250/1.0.0/WMS')
+  });
+}
 
-export var wmsmatrikeldaf = new LayerGroup({
-  'title': 'WMS Matriklen - DAF',
-  'fold': 'close',
-  layers: danlag(wmsmatrikellayers, dafimagelayer, 'https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS')
-});
+export function wmsdtk500daf()  {
+  return new LayerGroup({
+    'title': 'WMS Danmarks Topografiske Kortværk 1:500.000 - DAF',
+    'fold': 'close',
+    layers: danlag(wmsdtk500layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_500/1.0.0/WMS')
+  });
+}
 
-export var wmsgeodanmarkdaf = new LayerGroup({
-  'title': 'WMS GeoDanmark - DAF',
-  'fold': 'close',
-  layers: danlag(wmsgeodanmarklayers, dafimagelayer, 'https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS')
-});
+export function wmsdtk1000daf() {
+  return new LayerGroup({
+    'title': 'WMS Danmarks Topografiske Kortværk 1:1000.000 - DAF',
+    'fold': 'close',
+    layers: danlag(wmsdtk1000layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS')
+  });
+}
 
-export var wmsdhmdaf = new LayerGroup({
-  'title': 'WMS Danmarks Højdemodel - DAF',
-  'fold': 'close',
-  layers: danlag(wmsdhmlayers, dafimagelayer, 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS')
-});
+export function wmsstednavnedaf() {
+  return new LayerGroup({
+    'title': 'WMS Danske Stednavne - DAF',
+    'fold': 'close',
+    layers: danlag(wmsstednavnelayers, dafimagelayer, 'https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS')
+  });
+}
 
-export var wmsdagidaf = new LayerGroup({
-  'title': 'WMS DAGI - DAF',
-  'fold': 'close',
-  layers: danlag(wmsdagilayers, dafimagelayer, 'https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS')
-});
+export function wmsmatrikeldaf() {
+  return new LayerGroup({
+    'title': 'WMS Matriklen - DAF',
+    'fold': 'close',
+    layers: danlag(wmsmatrikellayers, dafimagelayer, 'https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS')
+  });
+}
 
-export var baggrundskortWMTS = new LayerGroup({
-  'title': 'Sammenlign baggrundskort - WMTS',
-  'fold': 'close',
-  layers: [
-    new LayerTile({
-      //opacity: 1.0,
-      title: 'Ortofoto - forår (KF)',
-      type: 'base',
-      visible: false, 
-      source: new WMTS({
-        url: "https://services.kortforsyningen.dk/orto_foraar?token=" + kftoken,
-        layer: "orto_foraar",
-        matrixSet: "View1",
-        format: "image/jpeg",
-        tileGrid: kfTileGrid,
-        style: 'default',
-        size: [256, 256],
-        attributions: getAttributions('kf')
-      })
-    }),
-    new LayerTile({
-      //opacity: 1.0,
-      title: 'Ortofoto - forår (DAF)',
-      type: 'base',
-      visible: false, 
-      source: new WMTS({
-        url: "https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar_wmts/1.0.0/WMTS?"+dafusrpw,
-        layer: "orto_foraar_wmts",
-        matrixSet: "KortforsyningTilingDK",
-        format: "image/jpeg",
-        style: 'default',
-        size: [256, 256],
-        tileGrid: dfTileGrid,      
-        attributions: getAttributions('daf')
-      })
-    }),
-    new LayerTile({
-      //opacity: 1.0,
-      title: 'Skærmkort - grå (KF)',
-      type: 'base',
-      visible: false, 
-      source: new WMTS({
-        url: "https://services.kortforsyningen.dk/topo_skaermkort_graa?token=" + kftoken,
-        layer: "dtk_skaermkort_graa",
-        matrixSet: "View1",
-        format: "image/jpeg",
-        tileGrid: kfTileGrid,
-        style: 'default',
-        size: [256, 256],
-        attributions: getAttributions('kf')
-      })
-    }),
-    new LayerTile({
-      //opacity: 1.0,
-      title: 'Skærmkort - grå (DAF)',
-      type: 'base',
-      visible: false, 
-      source: new WMTS({
-        url: "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_graa/1.0.0/wmts?"+dafusrpw,
-        layer: "topo_skaermkort_graa",
-        matrixSet: "View1",
-        format: "image/jpeg",
-        style: 'default',
-        size: [256, 256],
-        tileGrid: dfTileGrid,      
-        attributions: getAttributions('daf')
-      })
-    }),
-    new LayerTile({
-      //opacity: 1.0,
-      title: 'Skærmkort - dæmpet (KF)',
-      type: 'base',
-      visible: false, 
-      source: new WMTS({
-        url: "https://services.kortforsyningen.dk/topo_skaermkort_daempet?token=" + kftoken,
-        layer: "dtk_skaermkort_daempet",
-        matrixSet: "View1",
-        format: "image/jpeg",
-        tileGrid: kfTileGrid,
-        style: 'default',
-        size: [256, 256],
-        attributions: getAttributions('kf')
-      })
-    }),
-    new LayerTile({
-      //opacity: 1.0,
-      title: 'Skærmkort - dæmpet (DAF)',
-      type: 'base',
-      visible: false, 
-      source: new WMTS({
-        url: "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_daempet/1.0.0/wmts?"+dafusrpw,
-        layer: "topo_skaermkort_daempet",
-        matrixSet: "View1",
-        format: "image/jpeg",
-        style: 'default',
-        size: [256, 256],
-        tileGrid: dfTileGrid,      
-        attributions: getAttributions('daf')
-      })
-    }),
-    new LayerTile({
-      //opacity: 1.0,
-      title: 'Skærmkort (KF)',
-      type: 'base',
-      visible: false, 
-      source: new WMTS({
-        url: "https://services.kortforsyningen.dk/topo_skaermkort?token=" + kftoken,
-        layer: "dtk_skaermkort",
-        matrixSet: "View1",
-        format: "image/jpeg",
-        tileGrid: kfTileGrid,
-        style: 'default',
-        size: [256, 256],
-        attributions: getAttributions('kf')
-      })
-    }),
-    new LayerTile({
-      //opacity: 1.0,
-      title: 'Skærmkort (DAF)',
-      type: 'base',
-      visible: true, // by default this layer is visible
-      source: new WMTS({
-        url: "https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort_wmts/1.0.0/wmts?" + dafusrpw,
-        layer: "topo_skaermkort",
-        matrixSet: "View1",
-        format: "image/jpeg",
-        style: 'default',
-        size: [256, 256],
-        tileGrid: dfTileGrid,      
-        attributions: getAttributions('daf')
-      })
-    })
-  ]
-});
+export function wmsgeodanmarkdaf() {
+  return new LayerGroup({
+    'title': 'WMS GeoDanmark - DAF',
+    'fold': 'close',
+    layers: danlag(wmsgeodanmarklayers, dafimagelayer, 'https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS')
+  });
+}
+
+export function wmsdhmdaf() {
+    return new LayerGroup({
+    'title': 'WMS Danmarks Højdemodel - DAF',
+    'fold': 'close',
+    layers: danlag(wmsdhmlayers, dafimagelayer, 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS')
+  });
+}
+
+export function wmsdagidaf() {
+  return new LayerGroup({
+    'title': 'WMS DAGI - DAF',
+    'fold': 'close',
+    layers: danlag(wmsdagilayers, dafimagelayer, 'https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS')
+  });
+}
 
 
-export var baggrundskortWMS = new LayerGroup({
-  'title': 'Sammenlign baggrundskort - WMS',
-  'fold': 'close',
-  layers: [
-    new LayerTile({  
-      title:'Skærmkort - grå (KF)',    
-      type:'base',
-      visible: false, 
-      source: new TileWMS({       
-        url: 'https://services.kortforsyningen.dk/topo_skaermkort?token='+kftoken,
-        params: {
-          'LAYERS':'dtk_skaermkort_graa',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'false',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('kf')
-      })
-    }), 
-    new LayerTile({  
-      title:'Skærmkort - grå (DAF)',    
-      type:'base',
-      visible: false, 
-      source: new TileWMS({       
-        url: 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?'+dafusrpw,
-        params: {
-          'LAYERS':'dtk_skaermkort_graa',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'FALSE',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('daf')
-      })
-    }), 
-    new LayerTile({  
-      title:'Skærmkort - dæmpet (KF)',    
-      type:'base',
-      visible: false, 
-      source: new TileWMS({       
-        url: 'https://services.kortforsyningen.dk/topo_skaermkort?token='+kftoken,
-        params: {
-          'LAYERS':'dtk_skaermkort_daempet',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'false',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('kf')
-      })
-    }), 
-    new LayerTile({  
-      title:'Skærmkort - dæmpet (DAF)',    
-      type:'base',
-      visible: false, 
-      source: new TileWMS({       
-        url: 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?'+dafusrpw,
-        params: {
-          'LAYERS':'dtk_skaermkort_daempet',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'FALSE',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('daf')
-      })
-    }), 
-    new LayerTile({  
-      title:'Skærmkort (KF)',    
-      type:'base',
-      visible: false, 
-      source: new TileWMS({       
-        url: 'https://services.kortforsyningen.dk/topo_skaermkort?token='+kftoken,
-        params: {
-          'LAYERS':'dtk_skaermkort',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'false',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('kf')
-      })
-    }), 
-    new LayerTile({  
-      title:'Skærmkort (DAF)',    
-      type:'base',
-      visible: false, 
-      source: new TileWMS({       
-        url: 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?'+dafusrpw,
-        params: {
-          'LAYERS':'dtk_skaermkort',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'FALSE',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('daf')
-      })
-    })
-  ]
-});
-
-
-export var WMSlag= new LayerGroup({
-  title: 'Sammenlign WMS lag',
-  fold: 'close',
-  layers: [
-    new ImageLayer({
-      title:'Stednavne - vandløb(KF)',
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000,
-      source: new ImageWMS({
-        url: "https://services.kortforsyningen.dk/danske_stednavne?token="+kftoken,
-        params:{
-          'LAYERS':'vandloeb',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'true',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },          
-        attributions: getAttributions('kf')
-      })
-    }), 
-    new ImageLayer({  
-      title:'Stednavne - vandløb (DAF)',    
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000, 
-      source: new ImageWMS({       
-        url: 'https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS?'+dafusrpw,
-        params: {
-          'LAYERS':'vandloeb',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'TRUE',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('daf')
-      })
-    }), 
-    new ImageLayer({
-      title:'DHM Overflade (KF)',
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000,
-      source: new ImageWMS({
-        url: "https://services.kortforsyningen.dk/dhm?token="+kftoken,
-        params:{
-          'LAYERS':'dhm_overflade_skyggekort_transparent',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'true',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },          
-        attributions: getAttributions('kf')
-      })
-    }), 
-    new ImageLayer({  
-      title:'DHM Overflade (DAF)',    
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000, 
-      source: new ImageWMS({       
-        url: 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS?'+dafusrpw,
-        params: {
-          'LAYERS':'dhm_overflade_skyggekort',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'TRUE',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('daf')
-      })
-    }), 
-    new ImageLayer({
-      title:'DHM Terræn (KF)',
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000,
-      source: new ImageWMS({
-        url: "https://services.kortforsyningen.dk/dhm?token="+kftoken,
-        params:{
-          'LAYERS':'dhm_terraen_skyggekort_transparent',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'true',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },          
-        attributions: getAttributions('kf')
-      })
-    }), 
-    new ImageLayer({  
-      title:'DHM Terræn (DAF)',    
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000, 
-      source: new ImageWMS({       
-        url: 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS?'+dafusrpw,
-        params: {
-          'LAYERS':'dhm_terraen_skyggekort',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'TRUE',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('daf')
-      })
-    }), 
-    new ImageLayer({
-      title:'DAGI kommuner (KF)',
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000,
-      source: new ImageWMS({
-        url: "https://services.kortforsyningen.dk/dagi?token="+kftoken,
-        params:{
-          'LAYERS':'kommune',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'true',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },          
-        attributions: getAttributions('kf')
-      })
-    }), 
-    new ImageLayer({  
-      title:'DAGI kommuner (DAF)',    
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000, 
-      source: new ImageWMS({       
-        url: 'https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS?'+dafusrpw,
-        params: {
-          'LAYERS':'Kommuneinddeling',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'TRUE',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('daf')
-      })
-    }), 
-    new ImageLayer({
-      title:'Matrikel (KF)',
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000,
-      source: new ImageWMS({
-        url: "https://services.kortforsyningen.dk/mat?token="+kftoken,
-        params:{
-          'LAYERS':'MatrikelSkel,Centroide',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'true',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },          
-        attributions: getAttributions('kf')
-      })
-    }), 
-    new ImageLayer({  
-      title:'Matrikel (DAF)',    
-      type:'overlay',
-      visible: false,
-      opacity: 1.0,
-      zIndex:1000, 
-      source: new ImageWMS({       
-        url: 'https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS?'+dafusrpw,
-        params: {
-          'LAYERS':'MatrikelSkel_Gaeldende,Centroide_Gaeldende',
-          'VERSION':'1.1.1',
-          'TRANSPARENT':'TRUE',
-          'FORMAT': "image/png",
-          'STYLES':'' 
-        },      
-        attributions: getAttributions('daf')
-      })
-    }), 
-  ]
-})
 
 function beregnAfstand(location1, location2) {
   let l = Math.sqrt(Math.pow(location1[0] - location2[0], 2) + Math.pow(location1[0] - location2[0], 2));

@@ -10,22 +10,24 @@ import LayerSwitcher from 'ol-layerswitcher';
 import {defaults as defaultControls} from 'ol/control';
 import * as kort from '/modules/kort';
 import * as geolocation from '/modules/geolocation';
-import {BBOXControl} from '/modules/bboxcontrol';
-import Popup from 'ol-popup';
 
-var popup= new Popup();
+var map;
 
-const map = new Map({
-  target: 'map',
-  layers: [kort.wmsdagidaf, kort.wmsdhmdaf, kort.wmsgeodanmarkdaf, kort.wmsmatrikeldaf, kort.wmsstednavnedaf, kort.wmsortoforaardaf, kort.wmsdtk1000daf, kort.wmsdtk500daf, kort.wmsdtk250daf, kort.wmsdtk25daf, kort.wmsskaermkortdaf, kort.WMSlag, kort.baggrundskortWMS, kort.baggrundskortWMTS],
-  loadTilesWhileAnimating: true,
-  view: kort.view, 
-  controls: defaultControls().extend([
-    new LayerSwitcher(),
-    new BBOXControl({popup: popup})
-  ]),
-});
+async function main() {
 
-map.addOverlay(popup);
+  let layers= await kort.init();
 
-geolocation.show(map);
+  map = new Map({
+    target: 'map',
+    layers: [kort.wmsdagidaf(), kort.wmsdhmdaf(), kort.wmsgeodanmarkdaf(), kort.wmsmatrikeldaf(), kort.wmsstednavnedaf(), kort.wmsortoforaardaf(), kort.wmsdtk1000daf(), kort.wmsdtk500daf(), kort.wmsdtk250daf(), kort.wmsdtk25daf(), kort.wmsskaermkortdaf()],
+    loadTilesWhileAnimating: true,
+    view: kort.view, 
+    controls: defaultControls().extend([
+      new LayerSwitcher()
+    ]),
+  });
+
+  geolocation.show(map);
+}
+
+main();

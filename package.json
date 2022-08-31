@@ -35,8 +35,8 @@
   "devDependencies": {
     "eslint": "^5.16.0",
     "node-fetch": "^2.6.1",
+    "parcel-bundler": "^1.12.4",
     "xmldom": "^0.4.0",
-    "xpath": "0.0.32",
-    "parcel-bundler": "^1.12.4"
+    "xpath": "^0.0.32"
   }
 }
