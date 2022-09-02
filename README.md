@@ -20,3 +20,4 @@ Test lokalt: npm start
 
 Build: npm run build
 
+host query parameteren kan anvendes til ændre host navnet i tjeneste URL'erne. Default: services.datafordeler.dk

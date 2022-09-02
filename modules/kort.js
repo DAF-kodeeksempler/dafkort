@@ -125,27 +125,69 @@ async function getWMSlag(url) {
 var wmsskaermkortlayers= [];
 var wmsortoforaarlayers= [];
 var wmsdtk25layers= [];
-var wmsdagilayers= [];
-var wmsdhmlayers= [];
-var wmsgeodanmarklayers= [];
-var wmsmatrikellayers= [];
-var wmsstednavnelayers= [];
-var wmsdtk1000layers= [];
-var wmsdtk500layers= [];
 var wmsdtk250layers= [];
-export async function init() {
+var wmsdtk500layers= [];
+var wmsdtk1000layers= [];
+var wmsstednavnelayers= [];
+var wmsmatrikellayers= [];
+var wmsgeodanmarklayers= [];
+var wmsdhmlayers= [];
+var wmsdagilayers= [];
+
+var wmsskaermkorturl= 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms';
+var wmsortoforaarurl= 'https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS';
+var wmsdtk25url= 'https://services.datafordeler.dk/DKtopokort/dtk_25/1.0.0/WMS';
+var wmsdtk250url= 'https://services.datafordeler.dk/DKtopokort/dtk_250/1.0.0/WMS';
+var wmsdtk500url= 'https://services.datafordeler.dk/DKtopokort/dtk_500/1.0.0/WMS';
+var wmsdtk1000url= 'https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS';
+var wmsstednavneurl= 'https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS';
+var wmsmatrikelurl= 'https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS';
+var wmsgeodanmarkurl='https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS';
+var wmsdhmurl= 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS';
+var wmsdagiurl= 'https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS';
+
+var wmtsskaermkortgraaurl= "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_graa/1.0.0/wmts";
+var wmtsskaermkortdaempeturl= "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_daempet/1.0.0/wmts";
+var wmtsskaermkorturl= "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_wmts/1.0.0/wmts";
+var wmtsortoforaarurl= "https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar_wmts/1.0.0/WMTS";
+
+function skifthost(url,host) {
+  let hurl= new URL(url);    
+  hurl.host= host;
+  return hurl.href;
+}
+
+export async function init(host) {
+
+  if (host !== null) {
+    wmsskaermkorturl= skifthost(wmsskaermkorturl,host); 
+    wmsortoforaarurl= skifthost(wmsortoforaarurl,host); 
+    wmsdtk25url= skifthost(wmsdtk25url,host); 
+    wmsdtk250url= skifthost(wmsdtk250url,host); 
+    wmsdtk500url= skifthost(wmsdtk500url,host); 
+    wmsdtk1000url= skifthost(wmsdtk1000url,host); 
+    wmsstednavneurl= skifthost(wmsstednavneurl,host); 
+    wmsmatrikelurl= skifthost(wmsmatrikelurl,host); 
+    wmsgeodanmarkurl= skifthost(wmsgeodanmarkurl,host); 
+    wmsdhmurl= skifthost(wmsdhmurl,host); 
+    wmsdagiurl= skifthost(wmsdagiurl,host); 
+    wmtsskaermkortgraaurl= skifthost(wmtsskaermkortgraaurl,host); 
+    wmtsskaermkortdaempeturl= skifthost(wmtsskaermkortdaempeturl,host); 
+    wmtsskaermkorturl= skifthost(wmtsskaermkorturl,host); 
+    wmtsortoforaarurl= skifthost(wmtsortoforaarurl,host); 
+  }
   let services= [];
-  services.push(getWMSlag('https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms'));
-  services.push(getWMSlag('https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS'));
-  services.push(getWMSlag('https://services.datafordeler.dk/DKtopokort/dtk_25/1.0.0/WMS'));
-  services.push(getWMSlag('https://services.datafordeler.dk/DKtopokort/dtk_250/1.0.0/WMS'));
-  services.push(getWMSlag('https://services.datafordeler.dk/DKtopokort/dtk_500/1.0.0/WMS'));
-  services.push(getWMSlag('https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS'));
-  services.push(getWMSlag('https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS'));
-  services.push(getWMSlag('https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS'));
-  services.push(getWMSlag('https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS'));
-  services.push(getWMSlag('https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS'));
-  services.push(getWMSlag('https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS'));
+  services.push(getWMSlag(wmsskaermkorturl));
+  services.push(getWMSlag(wmsortoforaarurl));
+  services.push(getWMSlag(wmsdtk25url));
+  services.push(getWMSlag(wmsdtk250url));
+  services.push(getWMSlag(wmsdtk500url));
+  services.push(getWMSlag(wmsdtk1000url));
+  services.push(getWMSlag(wmsstednavneurl));
+  services.push(getWMSlag(wmsmatrikelurl));
+  services.push(getWMSlag(wmsgeodanmarkurl));
+  services.push(getWMSlag(wmsdhmurl));
+  services.push(getWMSlag(wmsdagiurl));
   let servicelag= await Promise.allSettled(services);
   if (servicelag[0].status === "fulfilled") {
     wmsskaermkortlayers= servicelag[0].value;
@@ -186,7 +228,7 @@ export function wmsskaermkortdaf() {
   return new LayerGroup({
     'title': 'WMS Skærmkort',
     'fold': 'close',
-    layers: danlag(wmsskaermkortlayers, daflayertile, 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms', "dtk_skaermkort")
+    layers: danlag(wmsskaermkortlayers, daflayertile, wmsskaermkorturl, "dtk_skaermkort")
   });
 }
 
@@ -194,7 +236,7 @@ export function wmsortoforaardaf() {
   return new LayerGroup({
     'title': 'WMS Ortofoto forår',
     'fold': 'close',
-    layers: danlag(wmsortoforaarlayers, daflayertile, 'https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS')
+    layers: danlag(wmsortoforaarlayers, daflayertile, wmsortoforaarurl)
   });
 }
 
@@ -202,7 +244,7 @@ export function wmsdtk25daf() {
   return new LayerGroup({
     'title': 'WMS Danmarks Topografiske Kortværk 1:25.000',
     'fold': 'close',
-    layers: danlag(wmsdtk25layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_25/1.0.0/WMS')
+    layers: danlag(wmsdtk25layers, daflayertile, wmsdtk25url)
   });
 }
 
@@ -210,7 +252,7 @@ export function wmsdtk250daf() {
   return new LayerGroup({
     'title': 'WMS Danmarks Topografiske Kortværk 1:250.000',
     'fold': 'close',
-    layers: danlag(wmsdtk250layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_250/1.0.0/WMS')
+    layers: danlag(wmsdtk250layers, daflayertile, wmsdtk250url)
   });
 }
 
@@ -218,7 +260,7 @@ export function wmsdtk500daf()  {
   return new LayerGroup({
     'title': 'WMS Danmarks Topografiske Kortværk 1:500.000',
     'fold': 'close',
-    layers: danlag(wmsdtk500layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_500/1.0.0/WMS')
+    layers: danlag(wmsdtk500layers, daflayertile, wmsdtk500url)
   });
 }
 
@@ -226,7 +268,7 @@ export function wmsdtk1000daf() {
   return new LayerGroup({
     'title': 'WMS Danmarks Topografiske Kortværk 1:1000.000',
     'fold': 'close',
-    layers: danlag(wmsdtk1000layers, daflayertile, 'https://services.datafordeler.dk/DKtopokort/dtk_1000/1.0.0/WMS')
+    layers: danlag(wmsdtk1000layers, daflayertile, wmsdtk1000url)
   });
 }
 
@@ -234,7 +276,7 @@ export function wmsstednavnedaf() {
   return new LayerGroup({
     'title': 'WMS Danske Stednavne',
     'fold': 'close',
-    layers: danlag(wmsstednavnelayers, dafimagelayer, 'https://services.datafordeler.dk/STEDNAVN/Danske_Stednavne/1.0.0/WMS')
+    layers: danlag(wmsstednavnelayers, dafimagelayer, wmsstednavneurl)
   });
 }
 
@@ -242,7 +284,7 @@ export function wmsmatrikeldaf() {
   return new LayerGroup({
     'title': 'WMS Matriklen',
     'fold': 'close',
-    layers: danlag(wmsmatrikellayers, dafimagelayer, 'https://services.datafordeler.dk/Matrikel/MatrikelGaeldendeOgForeloebigWMS/1.0.0/WMS')
+    layers: danlag(wmsmatrikellayers, dafimagelayer, wmsmatrikelurl)
   });
 }
 
@@ -250,7 +292,7 @@ export function wmsgeodanmarkdaf() {
   return new LayerGroup({
     'title': 'WMS GeoDanmark',
     'fold': 'close',
-    layers: danlag(wmsgeodanmarklayers, dafimagelayer, 'https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS')
+    layers: danlag(wmsgeodanmarklayers, dafimagelayer, wmsgeodanmarkurl)
   });
 }
 
@@ -258,7 +300,7 @@ export function wmsdhmdaf() {
     return new LayerGroup({
     'title': 'WMS Danmarks Højdemodel',
     'fold': 'close',
-    layers: danlag(wmsdhmlayers, dafimagelayer, 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS')
+    layers: danlag(wmsdhmlayers, dafimagelayer, wmsdhmurl)
   });
 }
 
@@ -266,7 +308,7 @@ export function wmsdagidaf() {
   return new LayerGroup({
     'title': 'WMS DAGI',
     'fold': 'close',
-    layers: danlag(wmsdagilayers, dafimagelayer, 'https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS')
+    layers: danlag(wmsdagilayers, dafimagelayer, wmsdagiurl)
   });
 }
 
@@ -280,7 +322,7 @@ export var wmtsskaermkort = new LayerGroup({
       type: 'base',
       visible: false, 
       source: new WMTS({
-        url: "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_graa/1.0.0/wmts?"+dafusrpw,
+        url: wmtsskaermkortgraaurl+"?"+dafusrpw,
         layer: "topo_skaermkort_graa",
         matrixSet: "View1",
         format: "image/jpeg",
@@ -296,7 +338,7 @@ export var wmtsskaermkort = new LayerGroup({
       type: 'base',
       visible: false, 
       source: new WMTS({
-        url: "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_daempet/1.0.0/wmts?"+dafusrpw,
+        url: wmtsskaermkortdaempeturl+"?"+dafusrpw,
         layer: "topo_skaermkort_daempet",
         matrixSet: "View1",
         format: "image/jpeg",
@@ -312,7 +354,7 @@ export var wmtsskaermkort = new LayerGroup({
       type: 'base',
       visible: true, // by default this layer is visible
       source: new WMTS({
-        url: "https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort_wmts/1.0.0/wmts?" + dafusrpw,
+        url: wmtsskaermkorturl+"?" + dafusrpw,
         layer: "topo_skaermkort",
         matrixSet: "View1",
         format: "image/jpeg",
@@ -335,7 +377,7 @@ export var wmtsortoforaar = new LayerGroup({
       type: 'base',
       visible: false, 
       source: new WMTS({
-        url: "https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar_wmts/1.0.0/WMTS?"+dafusrpw,
+        url: wmtsortoforaarurl+"?"+dafusrpw,
         layer: "orto_foraar_wmts",
         matrixSet: "KortforsyningTilingDK",
         format: "image/jpeg",

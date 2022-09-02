@@ -14,8 +14,12 @@ import * as geolocation from '/modules/geolocation';
 var map;
 
 async function main() {
+  
+  let url= new URL(window.location.href); 
+  const query = url.searchParams;
+  //console.log('hostparameter: ' + query.get('host'));
 
-  await kort.init();
+  await kort.init(query.get('host'));
 
   map = new Map({
     target: 'map',
