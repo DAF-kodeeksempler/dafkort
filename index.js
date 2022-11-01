@@ -23,7 +23,7 @@ async function main() {
 
   map = new Map({
     target: 'map',
-    layers: [kort.wmsdagidaf(), kort.wmsdhmdaf(), kort.wmsgeodanmarkdaf(), kort.wmsmatrikeldaf(), kort.wmsstednavnedaf(),  kort.wmsdtk1000daf(), kort.wmsdtk500daf(), kort.wmsdtk250daf(), kort.wmsdtk25daf(), kort.wmtsortoforaar, kort.wmsortoforaardaf(), kort.wmtsskaermkort, kort.wmsskaermkortdaf()],
+    layers: [kort.wmsfikspunktdaf(), kort.wmsdagidaf(), kort.wmsdhmdaf(), kort.wmsgeodanmarkdaf(), kort.wmsmatrikeldaf(), kort.wmsstednavnedaf(),  kort.wmsdtk1000daf(), kort.wmsdtk500daf(), kort.wmsdtk250daf(), kort.wmsdtk25daf(), kort.wmtsortoforaar, kort.wmsortoforaardaf(), kort.wmtsskaermkort, kort.wmsskaermkortdaf()],
     loadTilesWhileAnimating: true,
     view: kort.view, 
     controls: defaultControls().extend([

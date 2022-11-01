@@ -37,21 +37,13 @@ export const view = new View({
 
 function getAttributions(platform) {
   let attribution= 'Ukendt platorm';
-  if (platform === 'kf') {
-    attribution= '<p>Kort fra <a href="https://kortforsyningen.dk" target="_blank">Kortforsyningen</a>.';
-  }
-  else if (platform === 'daf') {
+  if (platform === 'daf') {
     attribution=  '<p>Kort fra <a href="https://datafordeler.dk" target="_blank">Datafordeleren</a>.';
   }
   return attribution + ' <a href="https://github.com/DAF-kodeeksempler/dafkort">Koden</a>';
 }
  
 let dafusrpw = futil.getDatafordelerensUseridPw();
-
-function credentials(searchParams) { 
-  searchParams.append('username',process.env.dafusername);
-  searchParams.append('password', process.env.dafpassword); 
-}
 
 function daflayertile(url, layer, synligtlag) {
   return new LayerTile({  
@@ -103,8 +95,7 @@ function danlag(lagnavne, lagfunktion, url, synligtlag) {
 
 async function getWMSlag(url) {  
   return new Promise(async resolved => {
-    let skrmurl= new URL(url);
-    credentials(skrmurl.searchParams);
+    let skrmurl= new URL(url + '?' + dafusrpw);
     skrmurl.searchParams.append('service','WMS');
     skrmurl.searchParams.append('request', 'GetCapabilities');
     const response= await fetch(skrmurl);
@@ -133,6 +124,7 @@ var wmsmatrikellayers= [];
 var wmsgeodanmarklayers= [];
 var wmsdhmlayers= [];
 var wmsdagilayers= [];
+var wmsfikspunktlayers= [];
 
 var wmsskaermkorturl= 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms';
 var wmsortoforaarurl= 'https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS';
@@ -145,6 +137,7 @@ var wmsmatrikelurl= 'https://services.datafordeler.dk/Matrikel/MatrikelGaeldende
 var wmsgeodanmarkurl='https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanmark_60_NOHIST/1.0.0/WMS';
 var wmsdhmurl= 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS';
 var wmsdagiurl= 'https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS';
+var wmsfikspunkturl= 'https://services.datafordeler.dk/FIKSPUNKT/FikspunktDK/1.0.0/WMS';
 
 var wmtsskaermkortgraaurl= "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_graa/1.0.0/wmts";
 var wmtsskaermkortdaempeturl= "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_daempet/1.0.0/wmts";
@@ -171,6 +164,7 @@ export async function init(host) {
     wmsgeodanmarkurl= skifthost(wmsgeodanmarkurl,host); 
     wmsdhmurl= skifthost(wmsdhmurl,host); 
     wmsdagiurl= skifthost(wmsdagiurl,host); 
+    wmsfikspunkturl= skifthost(wmsfikspunkturl,host); 
     wmtsskaermkortgraaurl= skifthost(wmtsskaermkortgraaurl,host); 
     wmtsskaermkortdaempeturl= skifthost(wmtsskaermkortdaempeturl,host); 
     wmtsskaermkorturl= skifthost(wmtsskaermkorturl,host); 
@@ -188,6 +182,7 @@ export async function init(host) {
   services.push(getWMSlag(wmsgeodanmarkurl));
   services.push(getWMSlag(wmsdhmurl));
   services.push(getWMSlag(wmsdagiurl));
+  services.push(getWMSlag(wmsfikspunkturl));
   let servicelag= await Promise.allSettled(services);
   if (servicelag[0].status === "fulfilled") {
     wmsskaermkortlayers= servicelag[0].value;
@@ -221,6 +216,9 @@ export async function init(host) {
   }
   if (servicelag[10].status === "fulfilled") {
     wmsdagilayers= servicelag[10].value;
+  }
+  if (servicelag[11].status === "fulfilled") {
+    wmsfikspunktlayers= servicelag[11].value;
   }
 }
 
@@ -309,6 +307,14 @@ export function wmsdagidaf() {
     'title': 'WMS DAGI',
     'fold': 'close',
     layers: danlag(wmsdagilayers, dafimagelayer, wmsdagiurl)
+  });
+}
+
+export function wmsfikspunktdaf() {
+  return new LayerGroup({
+    'title': 'WMS Fikspunkt',
+    'fold': 'close',
+    layers: danlag(wmsfikspunktlayers, dafimagelayer, wmsfikspunkturl)
   });
 }
 
