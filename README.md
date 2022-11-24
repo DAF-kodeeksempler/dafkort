@@ -2,8 +2,6 @@
 
 dafkort præsenterer Datafordelerens WMS og WMTS kort.
 
-Datafordelerens og Kortforsyningens præsentation af de mest populære kort kan på en let måde sammenlignes.
-
 dafkort anvender [OpenLayers](https://openlayers.org/) til kort funktionalitet.
 
 ## Installation
