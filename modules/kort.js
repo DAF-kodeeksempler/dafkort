@@ -125,6 +125,13 @@ var wmsgeodanmarklayers= [];
 var wmsdhmlayers= [];
 var wmsdagilayers= [];
 var wmsfikspunktlayers= [];
+var wmsdtk50layers= [];
+var wmsdtk100layers= [];
+var wmsdtk200layers= [];
+var wmstopo4cm_1953_1976layers= [];
+var wmshøjemålebordsbladelayers= [];
+var wmslavemålebordsbladelayers= [];
+var wmspreussiskemålebordsbladelayers= [];
 
 var wmsskaermkorturl= 'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms';
 var wmsortoforaarurl= 'https://services.datafordeler.dk/GeoDanmarkOrto/orto_foraar/1.0.0/WMS';
@@ -138,6 +145,13 @@ var wmsgeodanmarkurl='https://services.datafordeler.dk/GeoDanmarkVektor/GeoDanma
 var wmsdhmurl= 'https://services.datafordeler.dk/DHMNedboer/dhm/1.0.0/WMS';
 var wmsdagiurl= 'https://services.datafordeler.dk/DAGIM/dagi/1.0.0/WMS';
 var wmsfikspunkturl= 'https://services.datafordeler.dk/FIKSPUNKT/FikspunktDK/1.0.0/WMS';
+var wmsdtk50url= 'https://services.datafordeler.dk/DKtopokort/dtk_50/1.0.0/WMS';
+var wmsdtk100url= 'https://services.datafordeler.dk/DKtopokort/dtk_100/1.0.0/WMS';
+var wmsdtk200url= 'https://services.datafordeler.dk/DKtopokort/dtk_200/1.0.0/WMS';
+var wmstopo4cm_1953_1976url= 'https://services.datafordeler.dk/DKTopografiskeKortvaerk/topo4cm_1953_1976/1.0.0/wms';
+var wmshøjemålebordsbladeurl= 'https://services.datafordeler.dk/HoejeMaalebordsblade/topo20_hoeje_maalebordsblade/1.0.0/wms';
+var wmslavemålebordsbladeurl= 'https://services.datafordeler.dk/LaveMaalebordsblade/topo20_lave_maalebordsblade/1.0.0/wms';
+var wmspreussiskemålebordsbladeurl= 'https://services.datafordeler.dk/PreussiskeMaalebordsblade/topo25_preussen_maalebordsblade/1.0.0/wms';
 
 var wmtsskaermkortgraaurl= "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_graa/1.0.0/wmts";
 var wmtsskaermkortdaempeturl= "https://services.datafordeler.dk/DKskaermkort/topo_skaermkort_daempet/1.0.0/wmts";
@@ -169,6 +183,13 @@ export async function init(host) {
     wmtsskaermkortdaempeturl= skifthost(wmtsskaermkortdaempeturl,host); 
     wmtsskaermkorturl= skifthost(wmtsskaermkorturl,host); 
     wmtsortoforaarurl= skifthost(wmtsortoforaarurl,host); 
+    wmsdtk50url= skifthost(wmsdtk50url,host); 
+    wmsdtk100url= skifthost(wmsdtk100url,host); 
+    wmsdtk200url= skifthost(wmsdtk200url,host); 
+    wmstopo4cm_1953_1976url= skifthost(wmstopo4cm_1953_1976url,host); 
+    wmshøjemålebordsbladeurl= skifthost(wmshøjemålebordsbladeurl,host); 
+    wmslavemålebordsbladeurl= skifthost(wmslavemålebordsbladeurl,host); 
+    wmspreussiskemålebordsbladeurl= skifthost(wmspreussiskemålebordsbladeurl,host); 
   }
   let services= [];
   services.push(getWMSlag(wmsskaermkorturl));
@@ -183,6 +204,13 @@ export async function init(host) {
   services.push(getWMSlag(wmsdhmurl));
   services.push(getWMSlag(wmsdagiurl));
   services.push(getWMSlag(wmsfikspunkturl));
+  services.push(getWMSlag(wmsdtk50url));
+  services.push(getWMSlag(wmsdtk100url));
+  services.push(getWMSlag(wmsdtk200url));
+  services.push(getWMSlag(wmstopo4cm_1953_1976url));
+  services.push(getWMSlag(wmshøjemålebordsbladeurl));
+  services.push(getWMSlag(wmslavemålebordsbladeurl));
+  services.push(getWMSlag(wmspreussiskemålebordsbladeurl));
   let servicelag= await Promise.allSettled(services);
   if (servicelag[0].status === "fulfilled") {
     wmsskaermkortlayers= servicelag[0].value;
@@ -219,6 +247,27 @@ export async function init(host) {
   }
   if (servicelag[11].status === "fulfilled") {
     wmsfikspunktlayers= servicelag[11].value;
+  }
+  if (servicelag[12].status === "fulfilled") {
+    wmsdtk50layers= servicelag[12].value;
+  }
+  if (servicelag[13].status === "fulfilled") {
+    wmsdtk100layers= servicelag[13].value;
+  }
+  if (servicelag[14].status === "fulfilled") {
+    wmsdtk200layers= servicelag[14].value;
+  }
+  if (servicelag[15].status === "fulfilled") {
+    wmstopo4cm_1953_1976layers= servicelag[15].value;
+  }
+  if (servicelag[16].status === "fulfilled") {
+    wmshøjemålebordsbladelayers= servicelag[16].value;
+  }
+  if (servicelag[17].status === "fulfilled") {
+    wmslavemålebordsbladelayers= servicelag[17].value;
+  }
+  if (servicelag[18].status === "fulfilled") {
+    wmspreussiskemålebordsbladelayers= servicelag[18].value;
   }
 }
 
@@ -315,6 +364,62 @@ export function wmsfikspunktdaf() {
     'title': 'WMS Fikspunkt',
     'fold': 'close',
     layers: danlag(wmsfikspunktlayers, dafimagelayer, wmsfikspunkturl)
+  });
+}
+
+export function wmsdtk50daf() {
+  return new LayerGroup({
+    'title': 'WMS Danmarks Topografiske Kortværk 1:50.000',
+    'fold': 'close',
+    layers: danlag(wmsdtk50layers, daflayertile, wmsdtk50url)
+  });
+}
+
+export function wmsdtk100daf() {
+  return new LayerGroup({
+    'title': 'WMS Danmarks Topografiske Kortværk 1:100.000',
+    'fold': 'close',
+    layers: danlag(wmsdtk100layers, daflayertile, wmsdtk100url)
+  });
+}
+
+export function wmsdtk200daf() {
+  return new LayerGroup({
+    'title': 'WMS Danmarks Topografiske Kortværk 1:200.000',
+    'fold': 'close',
+    layers: danlag(wmsdtk200layers, daflayertile, wmsdtk200url)
+  });
+}
+
+export function wmstopo4cm_1953_1976daf() {
+  return new LayerGroup({
+    'title': 'WMS Danmarks Topografiske Kortværk Topo4cm_1953_1976',
+    'fold': 'close',
+    layers: danlag(wmstopo4cm_1953_1976layers, daflayertile, wmstopo4cm_1953_1976url)
+  });
+}
+
+export function wmshøjemålebordsbladedaf() {
+  return new LayerGroup({
+    'title': 'WMS Høje målebordsblade ',
+    'fold': 'close',
+    layers: danlag(wmshøjemålebordsbladelayers, daflayertile, wmshøjemålebordsbladeurl)
+  });
+}
+
+export function wmslavemålebordsbladedaf() {
+  return new LayerGroup({
+    'title': 'WMS Lave målebordsblade',
+    'fold': 'close',
+    layers: danlag(wmslavemålebordsbladelayers, daflayertile, wmslavemålebordsbladeurl)
+  });
+}
+
+export function wmspreussiskemålebordsbladedaf() {
+  return new LayerGroup({
+    'title': 'WMS Preussiske målebordsblade ',
+    'fold': 'close',
+    layers: danlag(wmspreussiskemålebordsbladelayers, daflayertile, wmspreussiskemålebordsbladeurl)
   });
 }
 

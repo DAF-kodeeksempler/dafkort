@@ -1,1 +1,0 @@
-export var wmsdtk500layers = ["dtk500","dtk500_2002","dtk500_2006","dtk500_2012","dtk500_2015","dtk500_2017","dtk500_2019","dtk500_2020"]
