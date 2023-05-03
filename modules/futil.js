@@ -21,7 +21,11 @@ export function getDatafordelerensUseridPw() {
 
 export function gethost() {
 
-	let host= auth.host;	
+	let host= null;
+	
+	if (auth.host) {
+		host= auth.host;
+	};	
 	
 	let url= new URL(window.location.href); 
 	const query = url.searchParams;
