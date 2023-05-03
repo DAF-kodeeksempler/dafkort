@@ -169,34 +169,39 @@ function skifthost(url,host) {
   return hurl.href;
 }
 
+const host= futil.gethost();
+if (host !== null) {
+  wmtsskaermkortgraaurl= skifthost(wmtsskaermkortgraaurl,host); 
+  wmtsskaermkortdaempeturl= skifthost(wmtsskaermkortdaempeturl,host); 
+  wmtsskaermkorturl= skifthost(wmtsskaermkorturl,host); 
+  wmtsortoforaarurl= skifthost(wmtsortoforaarurl,host); 
+  wmsskaermkorturl= skifthost(wmsskaermkorturl,host); 
+  wmsortoforaarurl= skifthost(wmsortoforaarurl,host); 
+  wmsdtk25url= skifthost(wmsdtk25url,host); 
+  wmsdtk250url= skifthost(wmsdtk250url,host); 
+  wmsdtk500url= skifthost(wmsdtk500url,host); 
+  wmsdtk1000url= skifthost(wmsdtk1000url,host); 
+  wmsstednavneurl= skifthost(wmsstednavneurl,host); 
+  wmsmatrikelurl= skifthost(wmsmatrikelurl,host); 
+  wmsgeodanmarkurl= skifthost(wmsgeodanmarkurl,host); 
+  wmsdhmurl= skifthost(wmsdhmurl,host); 
+  wmsdagiurl= skifthost(wmsdagiurl,host); 
+  wmsfikspunkturl= skifthost(wmsfikspunkturl,host); 
+  wmtsskaermkortgraaurl= skifthost(wmtsskaermkortgraaurl,host); 
+  wmtsskaermkortdaempeturl= skifthost(wmtsskaermkortdaempeturl,host); 
+  wmtsskaermkorturl= skifthost(wmtsskaermkorturl,host); 
+  wmtsortoforaarurl= skifthost(wmtsortoforaarurl,host); 
+  wmsdtk50url= skifthost(wmsdtk50url,host); 
+  wmsdtk100url= skifthost(wmsdtk100url,host); 
+  wmsdtk200url= skifthost(wmsdtk200url,host); 
+  wmstopo4cm_1953_1976url= skifthost(wmstopo4cm_1953_1976url,host); 
+  wmshøjemålebordsbladeurl= skifthost(wmshøjemålebordsbladeurl,host); 
+  wmslavemålebordsbladeurl= skifthost(wmslavemålebordsbladeurl,host); 
+  wmspreussiskemålebordsbladeurl= skifthost(wmspreussiskemålebordsbladeurl,host); 
+}
+
 export async function init() {
 
-  const host= futil.gethost();
-  if (host !== null) {
-    wmsskaermkorturl= skifthost(wmsskaermkorturl,host); 
-    wmsortoforaarurl= skifthost(wmsortoforaarurl,host); 
-    wmsdtk25url= skifthost(wmsdtk25url,host); 
-    wmsdtk250url= skifthost(wmsdtk250url,host); 
-    wmsdtk500url= skifthost(wmsdtk500url,host); 
-    wmsdtk1000url= skifthost(wmsdtk1000url,host); 
-    wmsstednavneurl= skifthost(wmsstednavneurl,host); 
-    wmsmatrikelurl= skifthost(wmsmatrikelurl,host); 
-    wmsgeodanmarkurl= skifthost(wmsgeodanmarkurl,host); 
-    wmsdhmurl= skifthost(wmsdhmurl,host); 
-    wmsdagiurl= skifthost(wmsdagiurl,host); 
-    wmsfikspunkturl= skifthost(wmsfikspunkturl,host); 
-    wmtsskaermkortgraaurl= skifthost(wmtsskaermkortgraaurl,host); 
-    wmtsskaermkortdaempeturl= skifthost(wmtsskaermkortdaempeturl,host); 
-    wmtsskaermkorturl= skifthost(wmtsskaermkorturl,host); 
-    wmtsortoforaarurl= skifthost(wmtsortoforaarurl,host); 
-    wmsdtk50url= skifthost(wmsdtk50url,host); 
-    wmsdtk100url= skifthost(wmsdtk100url,host); 
-    wmsdtk200url= skifthost(wmsdtk200url,host); 
-    wmstopo4cm_1953_1976url= skifthost(wmstopo4cm_1953_1976url,host); 
-    wmshøjemålebordsbladeurl= skifthost(wmshøjemålebordsbladeurl,host); 
-    wmslavemålebordsbladeurl= skifthost(wmslavemålebordsbladeurl,host); 
-    wmspreussiskemålebordsbladeurl= skifthost(wmspreussiskemålebordsbladeurl,host); 
-  }
   let services= [];
   services.push(getWMSlag(wmsskaermkorturl));
   services.push(getWMSlag(wmsortoforaarurl));
