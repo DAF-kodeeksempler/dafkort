@@ -18,3 +18,17 @@ export function getDatafordelerensUseridPw() {
 	}
 	return `username=${auth.dafusername}&password=${auth.dafpassword}`;
 }
+
+export function gethost() {
+
+	let host= auth.host;	
+	
+	let url= new URL(window.location.href); 
+	const query = url.searchParams;
+
+	if (query.get('host')) {
+		host= query.get('host');
+	}
+
+	return host;
+}

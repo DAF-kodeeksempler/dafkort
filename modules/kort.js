@@ -94,22 +94,27 @@ function danlag(lagnavne, lagfunktion, url, synligtlag) {
 }
 
 async function getWMSlag(url) {  
-  return new Promise(async resolved => {
+  return new Promise(async (resolved, rejected) => {
     let skrmurl= new URL(url + '?' + dafusrpw);
     skrmurl.searchParams.append('service','WMS');
     skrmurl.searchParams.append('request', 'GetCapabilities');
     const response= await fetch(skrmurl);
-    const text= await response.text();
+    if (response.ok) {
+      const text= await response.text();
 
-    var doc = new DOMParser().parseFromString(text);
-    var select = xpath.useNamespaces({"ns": "http://www.opengis.net/wms"}); //WMS
-    var nodes = select("//ns:Layer/ns:Layer/ns:Name/text()", doc)
-  
-    let layers= [];
-    for (let i= 0; i<nodes.length; i++) {
-      layers.push(nodes[i].toString());
-    };
-    resolved(layers);
+      var doc = new DOMParser().parseFromString(text);
+      var select = xpath.useNamespaces({"ns": "http://www.opengis.net/wms"}); //WMS
+      var nodes = select("//ns:Layer/ns:Layer/ns:Name/text()", doc)
+    
+      let layers= [];
+      for (let i= 0; i<nodes.length; i++) {
+        layers.push(nodes[i].toString());
+      };
+      resolved(layers);
+    }
+    else {
+      rejected();
+    }
   });
 }
 
@@ -164,8 +169,9 @@ function skifthost(url,host) {
   return hurl.href;
 }
 
-export async function init(host) {
+export async function init() {
 
+  const host= futil.gethost();
   if (host !== null) {
     wmsskaermkorturl= skifthost(wmsskaermkorturl,host); 
     wmsortoforaarurl= skifthost(wmsortoforaarurl,host); 
@@ -273,7 +279,7 @@ export async function init(host) {
 
 export function wmsskaermkortdaf() { 
   return new LayerGroup({
-    'title': 'WMS Skærmkort',
+    'title': 'WMS Skærmkort' + (wmsskaermkortlayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsskaermkortlayers, daflayertile, wmsskaermkorturl, "dtk_skaermkort")
   });
@@ -281,7 +287,7 @@ export function wmsskaermkortdaf() {
 
 export function wmsortoforaardaf() {
   return new LayerGroup({
-    'title': 'WMS Ortofoto forår',
+    'title': 'WMS Ortofoto forår' + (wmsortoforaarlayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsortoforaarlayers, daflayertile, wmsortoforaarurl)
   });
@@ -289,7 +295,7 @@ export function wmsortoforaardaf() {
 
 export function wmsdtk25daf() {
   return new LayerGroup({
-    'title': 'WMS Danmarks Topografiske Kortværk 1:25.000',
+    'title': 'WMS Danmarks Topografiske Kortværk 1:25.000' + (wmsdtk25layers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsdtk25layers, daflayertile, wmsdtk25url)
   });
@@ -297,7 +303,7 @@ export function wmsdtk25daf() {
 
 export function wmsdtk250daf() {
   return new LayerGroup({
-    'title': 'WMS Danmarks Topografiske Kortværk 1:250.000',
+    'title': 'WMS Danmarks Topografiske Kortværk 1:250.000' + (wmsdtk250layers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsdtk250layers, daflayertile, wmsdtk250url)
   });
@@ -305,7 +311,7 @@ export function wmsdtk250daf() {
 
 export function wmsdtk500daf()  {
   return new LayerGroup({
-    'title': 'WMS Danmarks Topografiske Kortværk 1:500.000',
+    'title': 'WMS Danmarks Topografiske Kortværk 1:500.000' + (wmsdtk500layers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsdtk500layers, daflayertile, wmsdtk500url)
   });
@@ -313,7 +319,7 @@ export function wmsdtk500daf()  {
 
 export function wmsdtk1000daf() {
   return new LayerGroup({
-    'title': 'WMS Danmarks Topografiske Kortværk 1:1000.000',
+    'title': 'WMS Danmarks Topografiske Kortværk 1:1000.000' + (wmsdtk1000layers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsdtk1000layers, daflayertile, wmsdtk1000url)
   });
@@ -321,7 +327,7 @@ export function wmsdtk1000daf() {
 
 export function wmsstednavnedaf() {
   return new LayerGroup({
-    'title': 'WMS Danske Stednavne',
+    'title': 'WMS Danske Stednavne' + (wmsstednavnelayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsstednavnelayers, dafimagelayer, wmsstednavneurl)
   });
@@ -329,7 +335,7 @@ export function wmsstednavnedaf() {
 
 export function wmsmatrikeldaf() {
   return new LayerGroup({
-    'title': 'WMS Matriklen',
+    'title': 'WMS Matriklen' + (wmsmatrikellayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsmatrikellayers, dafimagelayer, wmsmatrikelurl)
   });
@@ -337,7 +343,7 @@ export function wmsmatrikeldaf() {
 
 export function wmsgeodanmarkdaf() {
   return new LayerGroup({
-    'title': 'WMS GeoDanmark',
+    'title': 'WMS GeoDanmark' + (wmsgeodanmarklayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsgeodanmarklayers, dafimagelayer, wmsgeodanmarkurl)
   });
@@ -345,7 +351,7 @@ export function wmsgeodanmarkdaf() {
 
 export function wmsdhmdaf() {
     return new LayerGroup({
-    'title': 'WMS Danmarks Højdemodel',
+    'title': 'WMS Danmarks Højdemodel' + (wmsdhmlayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsdhmlayers, dafimagelayer, wmsdhmurl)
   });
@@ -353,7 +359,7 @@ export function wmsdhmdaf() {
 
 export function wmsdagidaf() {
   return new LayerGroup({
-    'title': 'WMS DAGI',
+    'title': 'WMS DAGI' + (wmsdagilayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsdagilayers, dafimagelayer, wmsdagiurl)
   });
@@ -361,7 +367,7 @@ export function wmsdagidaf() {
 
 export function wmsfikspunktdaf() {
   return new LayerGroup({
-    'title': 'WMS Fikspunkt',
+    'title': 'WMS Fikspunkt' + (wmsfikspunktlayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsfikspunktlayers, dafimagelayer, wmsfikspunkturl)
   });
@@ -369,7 +375,7 @@ export function wmsfikspunktdaf() {
 
 export function wmsdtk50daf() {
   return new LayerGroup({
-    'title': 'WMS Danmarks Topografiske Kortværk 1:50.000',
+    'title': 'WMS Danmarks Topografiske Kortværk 1:50.000' + (wmsdtk50layers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsdtk50layers, daflayertile, wmsdtk50url)
   });
@@ -377,7 +383,7 @@ export function wmsdtk50daf() {
 
 export function wmsdtk100daf() {
   return new LayerGroup({
-    'title': 'WMS Danmarks Topografiske Kortværk 1:100.000',
+    'title': 'WMS Danmarks Topografiske Kortværk 1:100.000' + (wmsdtk100layers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsdtk100layers, daflayertile, wmsdtk100url)
   });
@@ -385,7 +391,7 @@ export function wmsdtk100daf() {
 
 export function wmsdtk200daf() {
   return new LayerGroup({
-    'title': 'WMS Danmarks Topografiske Kortværk 1:200.000',
+    'title': 'WMS Danmarks Topografiske Kortværk 1:200.000' + (wmsdtk200layers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmsdtk200layers, daflayertile, wmsdtk200url)
   });
@@ -393,7 +399,7 @@ export function wmsdtk200daf() {
 
 export function wmstopo4cm_1953_1976daf() {
   return new LayerGroup({
-    'title': 'WMS Danmarks Topografiske Kortværk Topo4cm_1953_1976',
+    'title': 'WMS Danmarks Topografiske Kortværk Topo4cm_1953_1976' + (wmstopo4cm_1953_1976layers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmstopo4cm_1953_1976layers, daflayertile, wmstopo4cm_1953_1976url)
   });
@@ -401,7 +407,7 @@ export function wmstopo4cm_1953_1976daf() {
 
 export function wmshøjemålebordsbladedaf() {
   return new LayerGroup({
-    'title': 'WMS Høje målebordsblade ',
+    'title': 'WMS Høje målebordsblade ' + (wmshøjemålebordsbladelayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmshøjemålebordsbladelayers, daflayertile, wmshøjemålebordsbladeurl)
   });
@@ -409,7 +415,7 @@ export function wmshøjemålebordsbladedaf() {
 
 export function wmslavemålebordsbladedaf() {
   return new LayerGroup({
-    'title': 'WMS Lave målebordsblade',
+    'title': 'WMS Lave målebordsblade' + (wmslavemålebordsbladelayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmslavemålebordsbladelayers, daflayertile, wmslavemålebordsbladeurl)
   });
@@ -417,7 +423,7 @@ export function wmslavemålebordsbladedaf() {
 
 export function wmspreussiskemålebordsbladedaf() {
   return new LayerGroup({
-    'title': 'WMS Preussiske målebordsblade ',
+    'title': 'WMS Preussiske målebordsblade ' + (wmspreussiskemålebordsbladelayers.length===0?' - FEJLER':''),
     'fold': 'close',
     layers: danlag(wmspreussiskemålebordsbladelayers, daflayertile, wmspreussiskemålebordsbladeurl)
   });

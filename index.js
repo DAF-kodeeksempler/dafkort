@@ -15,11 +15,7 @@ var map;
 
 async function main() {
   
-  let url= new URL(window.location.href); 
-  const query = url.searchParams;
-  //console.log('hostparameter: ' + query.get('host'));
-
-  await kort.init(query.get('host'));
+  await kort.init();
 
   map = new Map({
     target: 'map',

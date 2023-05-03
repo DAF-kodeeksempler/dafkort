@@ -7,6 +7,7 @@ async function main() {
   auth.dafusername= process.env.dafusername;
   auth.dafpassword= process.env.dafpassword;
   auth.kftoken= process.env.kftoken;
+  auth.host= process.env.host;
   console.log(`dafusername= ${auth.dafusername}`);
   console.log(`kftoken= ${auth.kftoken}`);
   let tekst= JSON.stringify(auth);
